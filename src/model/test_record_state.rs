@@ -1,7 +1,7 @@
 use crate::bit_reader::BitReader;
 use crate::err::*;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct TestRecordState{
     pub uptime_s: u64,
     pub temperature_c: i64

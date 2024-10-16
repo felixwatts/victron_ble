@@ -1,6 +1,6 @@
 use num_enum::TryFromPrimitive;
 
-#[derive(Debug, Eq, PartialEq, TryFromPrimitive)]
+#[derive(Debug, Eq, PartialEq, TryFromPrimitive, Copy, Clone, Ord, PartialOrd, Hash)]
 #[repr(u64)]
 pub enum ErrorState {
     NoError = 0,

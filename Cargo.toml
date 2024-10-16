@@ -2,6 +2,10 @@
 name = "victron_ble"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/felixwatts/victron_ble"
+description = "Read data from Victron devices over Bluetooth Low Energy."
+license = "MIT"
+readme = "README.md"
 
 [dependencies]
 bluez-async = "0.7.2"

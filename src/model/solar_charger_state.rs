@@ -4,7 +4,7 @@ use crate::err::*;
 use super::error_state::ErrorState;
 use super::mode::Mode;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 pub struct SolarChargerState{
     pub mode: Mode,
     pub error_state: ErrorState,

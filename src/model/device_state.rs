@@ -4,7 +4,7 @@ use crate::record::*;
 use super::solar_charger_state::SolarChargerState;
 use super::test_record_state::TestRecordState;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 pub enum DeviceState{
     TestRecord(TestRecordState),
     SolarCharger(SolarChargerState)
