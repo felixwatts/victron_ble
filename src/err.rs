@@ -10,7 +10,7 @@ pub enum Error{
     IncorrectDeviceEncryptionKey,
     #[error("Invalid device encryption key. The Device encryption key provided is of the wrong length.")]
     InvalidDeviceEncryptionKey,
-    #[error("Unsupported device type. Please raise a sup[port ticket at quoting the device type code: {0}")]
+    #[error("Unsupported device type. Please raise an issue at https://github.com/felixwatts/victron_ble quoting the device type code: {0}")]
     UnsupportedDeviceType(u8)
 }
 

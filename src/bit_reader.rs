@@ -12,7 +12,7 @@ impl<'a> BitReader<'a>{
             return Err(Error::InvalidData("The data was shorter than expected.".into()));
         }
 
-        let  bit = (self.data[self.cursor >> 3] >> (self.cursor & 7)) & 1 == 1;
+        let bit = (self.data[self.cursor >> 3] >> (self.cursor & 7)) & 1 == 1;
         self.cursor += 1;
         Ok(bit)
     }
@@ -42,7 +42,7 @@ mod test {
     fn test_read(){
         use crate::bit_reader::BitReader;
         
-        let  data = hex::decode("1a2b3c4d5e6f7890").unwrap();
+        let data = hex::decode("1a2b3c4d5e6f7890").unwrap();
         let mut reader = BitReader::new(&data[..]);
 
         assert!(reader.read_bit().unwrap() == false);
