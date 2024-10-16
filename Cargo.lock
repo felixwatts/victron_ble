@@ -687,6 +687,7 @@ dependencies = [
  "futures",
  "hex",
  "num_enum",
+ "serde",
  "thiserror",
  "tokio",
 ]

@@ -5,6 +5,7 @@ use super::solar_charger_state::SolarChargerState;
 use super::test_record_state::TestRecordState;
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum DeviceState{
     TestRecord(TestRecordState),
     SolarCharger(SolarChargerState)
