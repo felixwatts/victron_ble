@@ -7,16 +7,6 @@ impl<'a> BitReader<'a>{
         Self{cursor: 0, data}
     }
 
-    pub fn read_bit(&mut self) -> Result<bool> {
-        if self.cursor == self.data.len() * 8 {
-            return Err(Error::InvalidData("The data was shorter than expected.".into()));
-        }
-
-        let bit = (self.data[self.cursor >> 3] >> (self.cursor & 7)) & 1 == 1;
-        self.cursor += 1;
-        Ok(bit)
-    }
-
     pub fn read_unsigned_int(&mut self, num_bits: usize) -> Result<u64> {
         let mut value = 0u64;
         for position in 0..num_bits {
@@ -34,6 +24,16 @@ impl<'a> BitReader<'a>{
             value -= 1i64 << (num_bits - 1)
         }
         Ok(value)
+    }
+
+    fn read_bit(&mut self) -> Result<bool> {
+        if self.cursor == self.data.len() * 8 {
+            return Err(Error::InvalidData("The data was shorter than expected.".into()));
+        }
+
+        let bit = (self.data[self.cursor >> 3] >> (self.cursor & 7)) & 1 == 1;
+        self.cursor += 1;
+        Ok(bit)
     }
 }
 
