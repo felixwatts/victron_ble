@@ -23,7 +23,7 @@ impl<'d, 'k> Record<'d, 'k>{
 
         let record = Self{ data, encryption_key };
 
-        if record.encryption_key_byte_0() != record.encryption_key[0] {
+        if record.encryption_key_byte_0() != encryption_key[0] {
             return Err(Error::IncorrectDeviceEncryptionKey);
         }
 
