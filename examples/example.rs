@@ -10,7 +10,7 @@ use bluer::Adapter;
 async fn main() {
     // You can get both of these from the Victron Connect app, connect to the device and look in "Device Info"
     let target_device_name = "mppt_cabin";
-    let target_device_encryption_key = hex::decode("Victron device encryption key").unwrap();
+    let target_device_encryption_key = hex::decode("49b7d10803c5efc4164ca9757cc64214").unwrap();
 
     let session = bluer::Session::new().await.unwrap();
     let adapter = session.default_adapter().await.unwrap();
