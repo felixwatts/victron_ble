@@ -29,8 +29,8 @@ async fn main() {
                 loop{
                     if let DeviceEvent::PropertyChanged(props) = change_events.next().await.unwrap() {
                         if let DeviceProperty::ManufacturerData(md) = props {
-                            if let Some(md) = md.get(737) {
-                                let parse_result = victron_ble::parse_manufacturer_data(&md, target_device_encryption_key);
+                            if let Some(md) = md.get(&737u16) {
+                                let parse_result = victron_ble::parse_manufacturer_data(&md, &target_device_encryption_key);
                                 println!("{parse_result:?}");
                             }
                         }
