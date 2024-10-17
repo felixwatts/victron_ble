@@ -1,6 +1,5 @@
 use bluest::Adapter;
 use futures::StreamExt;
-use tokio;
 
 #[tokio::main]
 async fn main() {

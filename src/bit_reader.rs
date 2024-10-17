@@ -45,15 +45,15 @@ mod test {
         let data = hex::decode("1a2b3c4d5e6f7890").unwrap();
         let mut reader = BitReader::new(&data[..]);
 
-        assert!(reader.read_bit().unwrap() == false);
-        assert!(reader.read_bit().unwrap() == true);
-        assert!(reader.read_bit().unwrap() == false);
-        assert!(reader.read_bit().unwrap() == true);
+        assert!(!reader.read_bit().unwrap());
+        assert!(reader.read_bit().unwrap());
+        assert!(!reader.read_bit().unwrap());
+        assert!(reader.read_bit().unwrap());
         assert!(reader.read_unsigned_int(6).unwrap() == 0x31);
         assert!(reader.read_signed_int(6).unwrap() == 0x0A);
         assert_eq!(reader.read_signed_int(4).unwrap(), -0x04);
         assert!(reader.read_unsigned_int(11).unwrap() == 0x4D3);
-        assert!(reader.read_bit().unwrap() == false);
+        assert!(!reader.read_bit().unwrap());
         assert!(reader.read_unsigned_int(32).unwrap() == 0x90786F5E);
     }
 }

@@ -20,6 +20,6 @@ And see the file is this repo: `extra-manufacturer-data-2022-12-14.pdf`
 
 ## Thanks
 
-The `BitReader` is copied from https://github.com/keshavdv/victron-ble
+The `BitReader` and some of the parsing and decrypting code is copied from https://github.com/keshavdv/victron-ble
 
 Some structs are copied from https://github.com/PeterGrace/vedirect_rs
