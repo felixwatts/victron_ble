@@ -20,7 +20,7 @@ block-padding = "0.3.3"
 hex = "0.4"
 futures = "0.3.31"
 tokio = { version =  "1.40.0", features=["full"] }
-bluest = "0.6.7"
+bluer = { version = "0.17.3", features=["bluetoothd"] }
 
 [features]
 serde = ["dep:serde"]

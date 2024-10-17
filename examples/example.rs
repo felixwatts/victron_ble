@@ -1,19 +1,47 @@
+#![cfg(target_os = "linux")]
+
+use std::println;
+
+use bluer::DeviceEvent;
 use bluest::Adapter;
 use futures::StreamExt;
 
 #[tokio::main]
 async fn main() {
     // You can get both of these from the Victron Connect app, connect to the device and look in "Device Info"
-    let device_name = "Victron device name";
+    let device_name = "mppt_cabin";
     let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
 
-    let adapter = Adapter::default().await.ok_or("Bluetooth adapter not found").unwrap();
-    adapter.wait_available().await.unwrap();
+    let session = bluer::Session::new().await?;
+    let adapter = session.default_adapter().await?;
+    adapter.set_powered(true).await?;
+
+    let device_events = adapter.discover_devices().await?;
+    pin_mut!(device_events);
+
+    loop {
+        if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = device_events.next().await {
+            let device = adapter.device(addr)?;
+            let device_ame = device.name().await?;
+            if device_name.unwrap_or("(unknown)") == device_name {
+                let change_events = device.events().await?;
+
+                loop{
+                    if let DeviceEvent::PropertyChanged(props) = change_events.next().await? {
+                        let md = props.manufacturer_data();
+
+                        println!("{md:?}");
+                    }
+                }
+            }
+        }
+    }
 
     let mut scan = adapter.scan(&[]).await.unwrap();
 
     while let Some(discovered_device) = scan.next().await {
-        if discovered_device.device.name().as_deref().unwrap_or("(unknown)") == device_name {
+
+        if discovered_device.device.name_async().await.as_deref().unwrap_or("(unknown)") == device_name {
             let md = discovered_device.adv_data.manufacturer_data.unwrap().data.clone();
             let victron_device_state = victron_ble::parse_manufacturer_data(&md, &device_encryption_key);
             println!("{victron_device_state:?}")
