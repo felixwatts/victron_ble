@@ -1,12 +1,6 @@
 use crate::err::*;
-use aes::cipher::consts::U16;
-use aes::cipher::SeekNum;
 use aes::{cipher::StreamCipher};
-use block_padding::generic_array::sequence::Lengthen;
-use block_padding::{generic_array::GenericArray, Pkcs7};
 use ctr::cipher::KeyIvInit;
-use block_padding::Padding;
-use block_padding::{Block};
 
 pub (crate) const RECORD_TYPE_TEST_RECORD: u8 = 0x00;
 pub (crate) const RECORD_TYPE_SOLAR_CHARGER: u8 = 0x01;
