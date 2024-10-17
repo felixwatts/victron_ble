@@ -3,7 +3,6 @@
 use std::println;
 
 use bluer::DeviceEvent;
-use bluest::Adapter;
 use futures::StreamExt;
 use bluer::Adapter;
 
@@ -17,7 +16,7 @@ async fn main() {
     let adapter = session.default_adapter().await.unwrap();
     adapter.set_powered(true).await.unwrap();
 
-    let device_events = adapter.discover_devices().await.unwrap();
+    let mut device_events = adapter.discover_devices().await.unwrap();
     // pin_mut!(device_events);
 
     loop {
@@ -25,7 +24,7 @@ async fn main() {
             let device = adapter.device(device_addr).unwrap();
             let device_name = device.name().await.unwrap().unwrap_or("(unknown)".to_string());
             if device_name == target_device_name {
-                let change_events = device.events().await.unwrap();
+                let mut change_events = device.events().await.unwrap();
 
                 loop{
                     if let DeviceEvent::PropertyChanged(props) = change_events.next().await.unwrap() {
