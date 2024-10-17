@@ -2,7 +2,7 @@
 
 use std::println;
 
-use bluer::DeviceEvent;
+use bluer::{DeviceEvent, DeviceProperty};
 use futures::StreamExt;
 use bluer::Adapter;
 
@@ -28,7 +28,7 @@ async fn main() {
 
                 loop{
                     if let DeviceEvent::PropertyChanged(props) = change_events.next().await.unwrap() {
-                        if let DeviceEvent::ManufacturerData(md) = props {
+                        if let DeviceProperty::ManufacturerData(md) = props {
                             println!("{md:?}");
                         }
                     }
