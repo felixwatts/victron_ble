@@ -9,8 +9,8 @@ use futures::StreamExt;
 #[tokio::main]
 async fn main() {
     // You can get both of these from the Victron Connect app, connect to the device and look in "Device Info"
-    let device_name = "mppt_cabin";
-    let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
+    let target_device_name = "mppt_cabin";
+    let target_device_encryption_key = hex::decode("Victron device encryption key").unwrap();
 
     let session = bluer::Session::new().await.unwrap();
     let adapter = session.default_adapter().await.unwrap();
@@ -22,8 +22,8 @@ async fn main() {
     loop {
         if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = device_events.next().await {
             let device = adapter.device(addr).unwrap();
-            let device_ame = device.name().await.unwrap();
-            if device_name.unwrap_or("(unknown)") == device_name {
+            let device_name = device.name().await.unwrap();
+            if device_name == target_device_name {
                 let change_events = device.events().await.unwrap();
 
                 loop{
