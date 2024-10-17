@@ -12,11 +12,11 @@ async fn main() {
     let device_name = "mppt_cabin";
     let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
 
-    let session = bluer::Session::new().await?;
-    let adapter = session.default_adapter().await?;
-    adapter.set_powered(true).await?;
+    let session = bluer::Session::new().await.unwrap();
+    let adapter = session.default_adapter().await.unwrap();
+    adapter.set_powered(true).await.unwrap();
 
-    let device_events = adapter.discover_devices().await?;
+    let device_events = adapter.discover_devices().await.unwrap();
     pin_mut!(device_events);
 
     loop {
@@ -27,7 +27,7 @@ async fn main() {
                 let change_events = device.events().await?;
 
                 loop{
-                    if let DeviceEvent::PropertyChanged(props) = change_events.next().await? {
+                    if let DeviceEvent::PropertyChanged(props) = change_events.next().await.unwrap() {
                         let md = props.manufacturer_data();
 
                         println!("{md:?}");
