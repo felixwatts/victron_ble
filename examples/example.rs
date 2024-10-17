@@ -5,6 +5,7 @@ use std::println;
 use bluer::DeviceEvent;
 use bluest::Adapter;
 use futures::StreamExt;
+use bluer::Adapter;
 
 #[tokio::main]
 async fn main() {
@@ -17,11 +18,11 @@ async fn main() {
     adapter.set_powered(true).await.unwrap();
 
     let device_events = adapter.discover_devices().await.unwrap();
-    pin_mut!(device_events);
+    // pin_mut!(device_events);
 
     loop {
         if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = device_events.next().await {
-            let device = adapter.device(addr).unwrap();
+            let device = adapter.device(device_addr).unwrap();
             let device_name = device.name().await.unwrap().unwrap_or("(unknown)".to_string());
             if device_name == target_device_name {
                 let change_events = device.events().await.unwrap();
