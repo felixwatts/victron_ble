@@ -37,14 +37,14 @@ async fn main() {
         }
     }
 
-    let mut scan = adapter.scan(&[]).await.unwrap();
+    // let mut scan = adapter.scan(&[]).await.unwrap();
 
-    while let Some(discovered_device) = scan.next().await {
+    // while let Some(discovered_device) = scan.next().await {
 
-        if discovered_device.device.name_async().await.as_deref().unwrap_or("(unknown)") == device_name {
-            let md = discovered_device.adv_data.manufacturer_data.unwrap().data.clone();
-            let victron_device_state = victron_ble::parse_manufacturer_data(&md, &device_encryption_key);
-            println!("{victron_device_state:?}")
-        }
-    }
+    //     if discovered_device.device.name_async().await.as_deref().unwrap_or("(unknown)") == device_name {
+    //         let md = discovered_device.adv_data.manufacturer_data.unwrap().data.clone();
+    //         let victron_device_state = victron_ble::parse_manufacturer_data(&md, &device_encryption_key);
+    //         println!("{victron_device_state:?}")
+    //     }
+    // }
 }
