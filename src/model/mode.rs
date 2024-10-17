@@ -1,6 +1,6 @@
 use num_enum::TryFromPrimitive;
 
-#[derive(Debug, Eq, PartialEq, TryFromPrimitive, Copy, Clone, Ord, PartialOrd, Hash)]
+#[derive(Debug, Eq, PartialEq, TryFromPrimitive, Copy, Clone, Ord, PartialOrd, Hash, StrumDisplay)]
 #[repr(u64)]
 pub enum Mode {
     Off = 0,

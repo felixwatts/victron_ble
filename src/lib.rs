@@ -3,8 +3,9 @@ mod record;
 mod err;
 mod model;
 
+pub use model::DeviceState;
+
 use std::collections::HashMap;
-use model::DeviceState;
 use record::Record;
 use crate::err::*;
 
