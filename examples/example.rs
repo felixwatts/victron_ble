@@ -21,10 +21,10 @@ async fn main() {
 
     loop {
         if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = device_events.next().await {
-            let device = adapter.device(addr)?;
-            let device_ame = device.name().await?;
+            let device = adapter.device(addr).unwrap();
+            let device_ame = device.name().await.unwrap();
             if device_name.unwrap_or("(unknown)") == device_name {
-                let change_events = device.events().await?;
+                let change_events = device.events().await.unwrap();
 
                 loop{
                     if let DeviceEvent::PropertyChanged(props) = change_events.next().await.unwrap() {
