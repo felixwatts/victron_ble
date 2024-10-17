@@ -4,6 +4,8 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum Error{
+    #[error("The data does not represent a Victron Manufacturer Data record. Victron devices emit multiple types of advertisment data so keep listening.")]
+    WrongAdvertisement,
     #[error("The data could not be parsed: {0}")]
     InvalidData(String),
     #[error("Incorrect device encryption key. The Device encryption key provided is not correct for this device.")]
