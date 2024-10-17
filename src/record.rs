@@ -1,5 +1,5 @@
 use crate::err::*;
-use aes::{cipher::StreamCipher};
+use aes::cipher::StreamCipher;
 use ctr::cipher::KeyIvInit;
 
 pub (crate) const RECORD_TYPE_TEST_RECORD: u8 = 0x00;
