@@ -28,9 +28,9 @@ async fn main() {
 
                 loop{
                     if let DeviceEvent::PropertyChanged(props) = change_events.next().await.unwrap() {
-                        // let md = props.manufacturer_data();
-
-                        println!("{props:?}");
+                        if let DeviceEvent::ManufacturerData(md) = props {
+                            println!("{md:?}");
+                        }
                     }
                 }
             }
