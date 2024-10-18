@@ -35,6 +35,7 @@ use crate::{err::*, DeviceState};
 /// ```
 pub async fn open_stream(device_name: String, device_encryption_key: Vec<u8>) -> Result<UnboundedReceiver<Result<DeviceState>>> {
     let adapter = bluest::Adapter::default().await.ok_or(Error::Bluest("Default adapter not found".into()))?;
+    adapter.wait_available().await?;
 
     let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
     
