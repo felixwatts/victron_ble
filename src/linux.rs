@@ -6,6 +6,7 @@ use std::time::Duration;
 use tokio::sync::mpsc::UnboundedReceiver;
 use crate::{err::*, DeviceState};
 use bluer::{Adapter, Address};
+use futures::StreamExt;
 
 /// Continuously monitor device state.
 ///
@@ -52,7 +53,7 @@ pub async fn open_stream(
         loop{
             match device_events.next().await {
                 Err(e) => { 
-                    sender.send(Err(Error::DeviceEventsChannelError)).await;
+                    let _ = sender.send(Err(Error::DeviceEventsChannelError));
                     return; 
                 },
                 Ok(DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md))) => {
@@ -61,11 +62,15 @@ pub async fn open_stream(
                         match device_state_result {
                             Err(Error::WrongAdvertisement) => {},
                             Err(_) => {
-                                sender.send(device_state_result).await;
+                                let _ = sender.send(device_state_result);
                                 return;
                             },
                             Ok(device_state) => {
-                                sender.send(Ok(device_state)).await;
+                                let send_result = sender.send(Ok(device_state));
+                                if send_result.is_err() {
+                                    // If consumer has dropped the channel then stop
+                                    return;
+                                }
                             }
                         }
                     }
@@ -75,7 +80,7 @@ pub async fn open_stream(
         }
     });
 
-    receiver
+    Ok(receiver)
 }
 
 async fn find_device(adapter: &Adapter, device_name: &str, timeout: Duration) -> Result<Address> {
@@ -93,7 +98,7 @@ async fn _find_device(adapter: &Adapter, device_name: &str) -> Result<Address> {
                 let device = adapter.device(device_addr)?;
                 let found_device_name = device.name().await?.unwrap_or("(unknown)".to_string());
                 if device_name == found_device_name {
-                    return device_addr;
+                    return Ok(device_addr);
                 }
             },
             None => return Err(Error::BluetoothDeviceNotFound),
