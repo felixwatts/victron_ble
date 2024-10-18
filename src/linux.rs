@@ -5,6 +5,7 @@
 use std::time::Duration;
 use tokio::sync::mpsc::UnboundedReceiver;
 use crate::{err::*, DeviceState};
+use bluer::{Adapter, Address};
 
 /// Continuously monitor device state.
 ///

@@ -6,6 +6,8 @@ use thiserror::Error;
 pub enum Error{
     #[error("An error occured in the MacOS bluetooth layer: {0}")]
     Bluest(String),
+    #[error("An error occured in the Linux bluetooth layer: {0}")]
+    Bluer(String),
     #[error("The specified bluetooth device was not found.")]
     BluetoothDeviceNotFound,
     #[error("There was an error while receiving advertising events from the device.")]
@@ -26,6 +28,13 @@ pub enum Error{
 impl From<bluest::Error> for Error{
     fn from(e: bluest::Error) -> Self {
         Error::Bluest(e.to_string())
+    }
+}
+
+#[cfg(target_os = "linux")]
+impl From<bluer::Error> for Error{
+    fn from(e: bluer::Error) -> Self {
+        Error::Bluer(e.to_string())
     }
 }
 
