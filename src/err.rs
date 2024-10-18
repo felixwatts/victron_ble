@@ -4,12 +4,12 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum Error{
+    #[error("An error occured in the MacOS bluetooth layer: {0}")]
+    Bluest(String),
     #[error("The specified bluetooth device was not found.")]
     BluetoothDeviceNotFound,
     #[error("There was an error while receiving advertising events from the device.")]
     DeviceEventsChannelError,
-    #[error("The data does not represent an advertisment emited by a Victron device.")]
-    NotVictron,
     #[error("The data does not represent a Victron Manufacturer Data record. Victron devices emit multiple types of advertisment data so keep listening.")]
     WrongAdvertisement,
     #[error("The data could not be parsed: {0}")]
@@ -20,6 +20,13 @@ pub enum Error{
     InvalidDeviceEncryptionKey,
     #[error("Unsupported device type. Please raise an issue at https://github.com/felixwatts/victron_ble quoting the device type code: {0}")]
     UnsupportedDeviceType(u8)
+}
+
+#[cfg(target_os = "macos")]
+impl From<bluest::Error> for Error{
+    fn from(e: bluest::Error) -> Self {
+        Error::Bluest(e.to_string())
+    }
 }
 
 impl From<StreamCipherError> for Error{

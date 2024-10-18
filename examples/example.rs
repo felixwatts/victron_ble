@@ -1,4 +1,4 @@
-use std::{println, time::Duration};
+use std::println;
 
 #[tokio::main]
 async fn main() {
@@ -7,10 +7,9 @@ async fn main() {
     let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
 
     let mut device_state_stream = victron_ble::open_stream(
-        device_name, 
-        &device_encryption_key, 
-        Duration::from_secs(30)
-    ).await;
+        device_name.into(), 
+        device_encryption_key
+    ).await.unwrap();
 
     while let Some(result) = device_state_stream.recv().await {
         println!("{result:?}");

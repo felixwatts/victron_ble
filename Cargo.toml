@@ -16,10 +16,13 @@ serde = { version = "1.0.210", optional=true, features = ["derive"]}
 strum = { version = "0.26.3", features = ["derive"] }
 block-padding = "0.3.3"
 futures = "0.3.31"
-tokio = { version =  "1.40.0", features=["sync"] }
+tokio = { version =  "1.40.0", features=["sync", "rt"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 bluer = { version = "0.17.3", features=["bluetoothd"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+bluest = "0.6.7"
 
 [dev-dependencies]
 hex = "0.4"
