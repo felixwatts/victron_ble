@@ -5,8 +5,9 @@
 use std::time::Duration;
 use tokio::sync::mpsc::UnboundedReceiver;
 use crate::{err::*, DeviceState};
-use bluer::{Adapter, Address};
+use bluer::{Adapter, Address, DeviceProperty, DeviceEvent};
 use futures::StreamExt;
+use crate::parse_manufacturer_data;
 
 /// Continuously monitor device state.
 ///
@@ -36,12 +37,12 @@ use futures::StreamExt;
 /// ```
 pub async fn open_stream(
     device_name: String, device_encryption_key: Vec<u8>
-) -> Result<UnboundedReceiver<DeviceState>> {
+) -> Result<UnboundedReceiver<Result<DeviceState>>> {
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;
     adapter.set_powered(true).await?;
 
-    let device_addr = find_device(&adapter, device_name, Duration::from_secs(30)).await?;
+    let device_addr = find_device(&adapter, &device_name, Duration::from_secs(30)).await?;
 
     let device = adapter.device(device_addr)?;
 
@@ -52,11 +53,11 @@ pub async fn open_stream(
     tokio::spawn(async move {
         loop{
             match device_events.next().await {
-                Err(e) => { 
+                None => { 
                     let _ = sender.send(Err(Error::DeviceEventsChannelError));
                     return; 
                 },
-                Ok(DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md))) => {
+                Some(DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md))) => {
                     if let Some(md) = md.get(crate::record::VICTRON_MANUFACTURER_ID) {
                         let device_state_result = parse_manufacturer_data(&md, &device_encryption_key);
                         match device_state_result {
