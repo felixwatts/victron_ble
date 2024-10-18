@@ -9,7 +9,6 @@ async fn main() {
         return;
     }
 
-    // You can get both of these from the Victron Connect app, connect to the device and look in "Device Info"
     let device_name = args.get(1).unwrap();
     let device_encryption_key = hex::decode(args.get(2).unwrap()).unwrap();
 
