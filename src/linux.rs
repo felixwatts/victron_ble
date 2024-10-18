@@ -8,6 +8,7 @@ use crate::{err::*, DeviceState};
 use bluer::{Adapter, Address, DeviceProperty, DeviceEvent};
 use futures::StreamExt;
 use crate::parse_manufacturer_data;
+use futures::pin_mut;
 
 /// Continuously monitor device state.
 ///
