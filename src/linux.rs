@@ -45,8 +45,7 @@ pub async fn open_stream(
 
     let device_addr = find_device(&adapter, &device_name, Duration::from_secs(30)).await?;
     let device = adapter.device(device_addr)?;
-    let device_events = device.events().await?;
-    pin_mut!(device_events);
+    let mut device_events = device.events().await?;
 
     let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
 
