@@ -58,7 +58,7 @@ pub async fn open_stream(
                     return; 
                 },
                 Some(DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md))) => {
-                    if let Some(md) = md.get(crate::record::VICTRON_MANUFACTURER_ID) {
+                    if let Some(md) = md.get(&crate::record::VICTRON_MANUFACTURER_ID) {
                         let device_state_result = parse_manufacturer_data(&md, &device_encryption_key);
                         match device_state_result {
                             Err(Error::WrongAdvertisement) => {},
