@@ -15,12 +15,16 @@ num_enum = "0.7.3"
 serde = { version = "1.0.210", optional=true, features = ["derive"]}
 strum = { version = "0.26.3", features = ["derive"] }
 block-padding = "0.3.3"
+futures = "0.3.31"
+tokio = { version =  "1.40.0", features=["sync"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+bluer = { version = "0.17.3", features=["bluetoothd"] }
 
 [dev-dependencies]
 hex = "0.4"
 futures = "0.3.31"
 tokio = { version =  "1.40.0", features=["full"] }
-bluer = { version = "0.17.3", features=["bluetoothd"] }
 
 [features]
 serde = ["dep:serde"]

@@ -4,6 +4,12 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum Error{
+    #[error("The specified bluetooth device was not found.")]
+    BluetoothDeviceNotFound,
+    #[error("There was an error while receiving advertising events from the device.")]
+    DeviceEventsChannelError,
+    #[error("The data does not represent an advertisment emited by a Victron device.")]
+    NotVictron,
     #[error("The data does not represent a Victron Manufacturer Data record. Victron devices emit multiple types of advertisment data so keep listening.")]
     WrongAdvertisement,
     #[error("The data could not be parsed: {0}")]

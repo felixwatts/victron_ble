@@ -14,14 +14,22 @@ pub (crate) struct Record<'d, 'k>{
     encryption_key: &'k[u8]
 }
 
+/// The content of a Victron extra manufacturer data record. Provides
+/// methods to validate the record and decrypt the payload.
+/// 
+/// Some Victron devices use the BLE advertising protocol to send a 
+/// manufacturer data record that represents the current device state.
+/// The record has this form:
+/// 
+/// Bytes | Value | Meaning
+/// 0     | 0x10  | This is a Victron device status message
+/// 1     | ?     | ?
+/// 2-3   | ?     | Device model ID. (Not used in this crate.)
+/// 4     | ?     | Record type, such as SolarCharger or Inverter.
+/// 5-6   | ?     | The IV used in decryption in little endian form.
+/// 7     | ?     | The first byte of the decryption key. Used to validate the given decyption key.
+/// 8..   | ?     | Payload encrypted using AES128 in CTR mode with the given IV.
 impl<'d, 'k> Record<'d, 'k>{
-
-    // prefix=struct.unpack("<H", data[:2])[0],
-    // model_id=struct.unpack("<H", data[2:4])[0],
-    // readout_type=struct.unpack("<B", data[4:5])[0],
-    // iv=struct.unpack("<H", data[5:7])[0],
-    // encrypted_data=data[7:],
-
     pub (crate) fn new(data: &'d[u8], encryption_key: &'k[u8]) -> Result<Self> {
         let record = Self{ data, encryption_key };
 
