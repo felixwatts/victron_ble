@@ -8,7 +8,6 @@ use crate::{err::*, DeviceState};
 use bluer::{Adapter, Address, DeviceProperty, DeviceEvent};
 use futures::StreamExt;
 use crate::parse_manufacturer_data;
-use futures::pin_mut;
 
 /// Continuously monitor device state.
 ///
@@ -57,6 +56,7 @@ pub async fn open_stream(
                     return; 
                 },
                 Some(DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md))) => {
+                    println!("{md:?}");
                     if let Some(md) = md.get(&crate::record::VICTRON_MANUFACTURER_ID) {
                         let device_state_result = parse_manufacturer_data(&md, &device_encryption_key);
                         match device_state_result {
@@ -75,7 +75,9 @@ pub async fn open_stream(
                         }
                     }
                 },
-                _ => {}
+                x => {
+                    println!("{x:?}");
+                }
             }
         }
     });
