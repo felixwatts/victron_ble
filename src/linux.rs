@@ -85,9 +85,11 @@ pub async fn open_stream(
 }
 
 async fn find_device(adapter: &Adapter, device_name: &str, timeout: Duration) -> Result<Address> {
-    return tokio::time::timeout(timeout, _find_device(adapter, device_name))
-        .await
-        .map_err(|_| Error::BluetoothDeviceNotFound)??;
+    Ok(
+        tokio::time::timeout(timeout, _find_device(adapter, device_name))
+            .await
+            .map_err(|_| Error::BluetoothDeviceNotFound)??
+    )
 }
 
 async fn _find_device(adapter: &Adapter, device_name: &str) -> Result<Address> {
