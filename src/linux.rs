@@ -72,17 +72,18 @@ pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec
 pub async fn open_stream(
     device_name: String, device_encryption_key: Vec<u8>
 ) -> Result<UnboundedReceiver<Result<DeviceState>>> {
-    let session = bluer::Session::new().await?;
-    let adapter = session.default_adapter().await?;
-    adapter.set_powered(true).await?;
-
-    let device_addr = find_device(&adapter, &device_name, Duration::from_secs(30)).await?;
-    let device = adapter.device(device_addr)?;
+    
 
 
     let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
 
     tokio::spawn(async move {
+        let session = bluer::Session::new().await.unwrap();
+        let adapter = session.default_adapter().await.unwrap();
+        adapter.set_powered(true).await.unwrap();
+
+        let device_addr = find_device(&adapter, &device_name, Duration::from_secs(30)).await.unwrap();
+        let device = adapter.device(device_addr).unwrap();
         let device_events = device.events().await.unwrap();
 
         pin_mut!(device_events);
