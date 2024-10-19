@@ -89,14 +89,19 @@ pub async fn open_stream(
                     let mut change_events = device.events().await.unwrap();
     
                     loop{
-                        if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(Error::DeviceEventsChannelError)? {
+                        if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(Error::DeviceEventsChannelError).unwrap() {
                             if let DeviceProperty::ManufacturerData(md) = props {  
                                 if let Some(md) = &md.get(&737u16) {
                                     let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
                                     match parse_result{
-                                        Ok(state) => sender.send(Ok(state)),
+                                        Ok(state) => {
+                                            let _ = sender.send(Ok(state));
+                                        },
                                         Err(Error::WrongAdvertisement) => {},
-                                        Err(e) => sender.send(Err(e))
+                                        Err(e) => {
+                                            let _ = sender.send(Err(e));
+                                            return;
+                                        }
                                     }
                                 }
                             }
