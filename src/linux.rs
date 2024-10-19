@@ -8,6 +8,7 @@ use crate::{err::*, DeviceState};
 use bluer::{Adapter, Address, DeviceProperty, DeviceEvent};
 use futures::StreamExt;
 use crate::parse_manufacturer_data;
+use anyhow::anyhow;
 
 pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec<u8>) -> Result<DeviceState> {
     let session = bluer::Session::new().await?;
@@ -27,10 +28,10 @@ pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec
                     if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(anyhow!("Device event stream ended"))? {
                         if let DeviceProperty::ManufacturerData(md) = props {  
                             if let Some(md) = &md.get(&737u16) {
-                                let parse_result = victron_ble::parse_manufacturer_data(&md, &target_device_encryption_key);
+                                let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
                                 match parse_result{
                                     Ok(state) => return Ok(state),
-                                    Err(victron_ble::Error::WrongAdvertisement) => {},
+                                    Err(Error::WrongAdvertisement) => {},
                                     Err(e) => return Err(e.into())
                                 }
                             }
