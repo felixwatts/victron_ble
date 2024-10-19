@@ -1,6 +1,6 @@
 #![cfg(target_os = "macos")]
 
-//! MacOS specific helper functions
+//! MacOS specific implementations
 
 use futures::StreamExt;
 use tokio::sync::mpsc::UnboundedReceiver;

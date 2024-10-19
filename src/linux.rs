@@ -2,10 +2,9 @@
 
 //! Linux specific helper functions
 
-use std::time::Duration;
 use tokio::sync::mpsc::UnboundedReceiver;
 use crate::{err::*, DeviceState};
-use bluer::{Adapter, Address, DeviceProperty, DeviceEvent};
+use bluer::{DeviceProperty, DeviceEvent};
 use futures::StreamExt;
 use crate::parse_manufacturer_data;
 use tokio::sync::mpsc::UnboundedSender;
