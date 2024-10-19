@@ -84,7 +84,7 @@ pub async fn open_stream(
     Ok(receiver)
 }
 
-async fn _open_stream(target_device_name: String, target_device_encryption_key: Vec<u8>, sender: UnboundedSender<DeviceState>) -> Result<()> {
+async fn _open_stream(target_device_name: String, target_device_encryption_key: Vec<u8>, sender: UnboundedSender<Result<DeviceState>>) -> Result<()> {
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;
     adapter.set_powered(true).await?;
