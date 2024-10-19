@@ -76,8 +76,8 @@ pub async fn open_stream(
 
     tokio::spawn(async move {
         let result = _open_stream(target_device_name, target_device_encryption_key, sender.clone()).await;
-        if result.is_err() {
-            let _ = sender.send(result);
+        if let Err(e) = result {
+            let _ = sender.send(Err(e));
         }
     });
 
