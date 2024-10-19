@@ -72,50 +72,36 @@ pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec
 pub async fn open_stream(
     device_name: String, device_encryption_key: Vec<u8>
 ) -> Result<UnboundedReceiver<Result<DeviceState>>> {
-    
-
-
     let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
 
     tokio::spawn(async move {
         let session = bluer::Session::new().await.unwrap();
         let adapter = session.default_adapter().await.unwrap();
         adapter.set_powered(true).await.unwrap();
-
-        let device_addr = find_device(&adapter, &device_name, Duration::from_secs(30)).await.unwrap();
-        let device = adapter.device(device_addr).unwrap();
-        let device_events = device.events().await.unwrap();
-
-        pin_mut!(device_events);
-
-        loop{
-            match device_events.next().await {
-                None => { 
-                    let _ = sender.send(Err(Error::DeviceEventsChannelError));
-                    return; 
-                },
-                Some(DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md))) => {
-                    println!("{md:?}");
-                    if let Some(md) = md.get(&crate::record::VICTRON_MANUFACTURER_ID) {
-                        let device_state_result = parse_manufacturer_data(&md, &device_encryption_key);
-                        match device_state_result {
-                            Err(Error::WrongAdvertisement) => {},
-                            Err(_) => {
-                                let _ = sender.send(device_state_result);
-                                return;
-                            },
-                            Ok(device_state) => {
-                                let send_result = sender.send(Ok(device_state));
-                                if send_result.is_err() {
-                                    // If consumer has dropped the channel then stop
-                                    return;
+    
+        let mut device_events = adapter.discover_devices().await.unwrap();
+    
+        loop {
+            if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = device_events.next().await {
+                let device = adapter.device(device_addr).unwrap();
+                let device_name = device.name().await.unwrap().unwrap_or("(unknown)".to_string());
+                if device_name == target_device_name {
+                    let mut change_events = device.events().await.unwrap();
+    
+                    loop{
+                        if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(Error::DeviceEventsChannelError)? {
+                            if let DeviceProperty::ManufacturerData(md) = props {  
+                                if let Some(md) = &md.get(&737u16) {
+                                    let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
+                                    match parse_result{
+                                        Ok(state) => sender.send(Ok(state)).await,
+                                        Err(Error::WrongAdvertisement) => {},
+                                        Err(e) => sender.send(Err(e)).await
+                                    }
                                 }
                             }
                         }
                     }
-                },
-                x => {
-                    println!("{x:?}");
                 }
             }
         }
