@@ -8,6 +8,22 @@ See the provided example for how to use.
 
 Currently only Solar Charger type devices are supported but support can be added for other device types if requested.
 
+## Example
+
+ ```rust
+let device_name = "Victon Bluetooth device name";
+let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
+
+let mut device_state_stream = victron_ble::open_stream(
+    device_name, 
+    &device_encryption_key
+).await;
+
+while let Some(result) = device_state_stream.recv().await {
+    println!("{result:?}");
+}
+ ```
+
 ## Encryption Key
 
 The data broadcast by Victron devices is encrypted. In order to decrypt it you will need the device's encryption key. This can be found using the Victron Connect app on Android or iOS. Connect to the device using the app, then look through the device settings to find the encryption key.

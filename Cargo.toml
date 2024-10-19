@@ -6,6 +6,7 @@ repository = "https://github.com/felixwatts/victron_ble"
 description = "Read data from Victron devices over Bluetooth Low Energy."
 license = "MIT"
 readme = "README.md"
+keywords = ["Victron", "BLE", "bluetooth"]
 
 [dependencies]
 aes = "0.8.4"

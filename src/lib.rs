@@ -35,8 +35,7 @@
 //! 
 //!     let mut device_state_stream = victron_ble::open_stream(
 //!         device_name, 
-//!         &device_encryption_key, 
-//!         Duration::from_secs(30)
+//!         &device_encryption_key
 //!     ).await;
 //! 
 //!     while let Some(result) = device_state_stream.recv().await {
@@ -79,14 +78,8 @@ pub use crate::err::*;
 
 #[cfg(target_os = "linux")]
 pub use linux::open_stream;
-#[cfg(target_os = "linux")]
-pub use linux::fetch;
 #[cfg(target_os = "macos")]
 pub use macos::open_stream;
-#[cfg(target_os = "macos")]
-pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec<u8>) -> Result<DeviceState> {
-    unimplemented!()
-}
 
 use record::Record;
 
