@@ -8,7 +8,6 @@ use crate::{err::*, DeviceState};
 use bluer::{Adapter, Address, DeviceProperty, DeviceEvent};
 use futures::StreamExt;
 use crate::parse_manufacturer_data;
-use anyhow::anyhow;
 
 pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec<u8>) -> Result<DeviceState> {
     let session = bluer::Session::new().await?;
