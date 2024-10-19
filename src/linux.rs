@@ -25,7 +25,7 @@ pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec
                 let mut change_events = device.events().await?;
 
                 loop{
-                    if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(anyhow!("Device event stream ended"))? {
+                    if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(Error::DeviceEventsChannelError)? {
                         if let DeviceProperty::ManufacturerData(md) = props {  
                             if let Some(md) = &md.get(&737u16) {
                                 let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
