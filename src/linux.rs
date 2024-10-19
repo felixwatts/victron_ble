@@ -70,7 +70,7 @@ pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec
 /// # }
 /// ```
 pub async fn open_stream(
-    device_name: String, device_encryption_key: Vec<u8>
+    target_device_name: String, target_device_encryption_key: Vec<u8>
 ) -> Result<UnboundedReceiver<Result<DeviceState>>> {
     let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
 
@@ -94,9 +94,9 @@ pub async fn open_stream(
                                 if let Some(md) = &md.get(&737u16) {
                                     let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
                                     match parse_result{
-                                        Ok(state) => sender.send(Ok(state)).await,
+                                        Ok(state) => sender.send(Ok(state)),
                                         Err(Error::WrongAdvertisement) => {},
-                                        Err(e) => sender.send(Err(e)).await
+                                        Err(e) => sender.send(Err(e))
                                     }
                                 }
                             }
