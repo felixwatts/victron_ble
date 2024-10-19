@@ -7,6 +7,7 @@ description = "Read data from Victron devices over Bluetooth Low Energy."
 license = "MIT"
 readme = "README.md"
 keywords = ["Victron", "BLE", "bluetooth"]
+exclude = ["extra-manufacturer-data-2022-12-14.pdf"]
 
 [dependencies]
 aes = "0.8.4"
