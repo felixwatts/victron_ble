@@ -75,34 +75,43 @@ pub async fn open_stream(
     let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
 
     tokio::spawn(async move {
-        let session = bluer::Session::new().await.unwrap();
-        let adapter = session.default_adapter().await.unwrap();
-        adapter.set_powered(true).await.unwrap();
-    
-        let mut device_events = adapter.discover_devices().await.unwrap();
-    
-        loop {
-            if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = device_events.next().await {
-                let device = adapter.device(device_addr).unwrap();
-                let device_name = device.name().await.unwrap().unwrap_or("(unknown)".to_string());
-                if device_name == target_device_name {
-                    let mut change_events = device.events().await.unwrap();
-    
-                    loop{
-                        if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(Error::DeviceEventsChannelError).unwrap() {
-                            if let DeviceProperty::ManufacturerData(md) = props {  
-                                if let Some(md) = &md.get(&737u16) {
-                                    let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
-                                    match parse_result{
-                                        Ok(state) => {
-                                            let _ = sender.send(Ok(state));
-                                        },
-                                        Err(Error::WrongAdvertisement) => {},
-                                        Err(e) => {
-                                            let _ = sender.send(Err(e));
-                                            return;
+        let result = _open_stream(target_device_name, target_device_encryption_key, sender.clone()).await;
+        if result.is_err() {
+            let _ = sender.send(result);
+        }
+    });
+
+    Ok(receiver)
+}
+
+async fn _open_stream(target_device_name: String, target_device_encryption_key: Vec<u8>, sender: UnboundedSender) -> Result<()> {
+    let session = bluer::Session::new().await?;
+    let adapter = session.default_adapter().await?;
+    adapter.set_powered(true).await?;
+
+    let mut device_events = adapter.discover_devices().await?;
+
+    loop {
+        if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = device_events.next().await {
+            let device = adapter.device(device_addr)?;
+            let device_name = device.name().await?.unwrap_or("(unknown)".to_string());
+            if device_name == target_device_name {
+                let mut change_events = device.events().await?;
+
+                loop{
+                    if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(Error::DeviceEventsChannelError)? {
+                        if let DeviceProperty::ManufacturerData(md) = props {  
+                            if let Some(md) = &md.get(&737u16) {
+                                let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
+                                match parse_result{
+                                    Ok(state) => {
+                                        let send_result = sender.send(Ok(state));
+                                        if send_result.is_err() {
+                                            return Ok(());
                                         }
-                                    }
+                                    },
+                                    Err(Error::WrongAdvertisement) => {},
+                                    Err(e) => return Err(e)
                                 }
                             }
                         }
@@ -110,9 +119,7 @@ pub async fn open_stream(
                 }
             }
         }
-    });
-
-    Ok(receiver)
+    }
 }
 
 async fn find_device(adapter: &Adapter, device_name: &str, timeout: Duration) -> Result<Address> {
