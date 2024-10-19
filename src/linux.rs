@@ -8,7 +8,7 @@ use crate::{err::*, DeviceState};
 use bluer::{Adapter, Address, DeviceProperty, DeviceEvent};
 use futures::StreamExt;
 use crate::parse_manufacturer_data;
-use futures_util::pin_mut;
+use tokio::sync::mpsc::UnboundedSender;
 
 pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec<u8>) -> Result<DeviceState> {
     let session = bluer::Session::new().await?;
@@ -84,7 +84,7 @@ pub async fn open_stream(
     Ok(receiver)
 }
 
-async fn _open_stream(target_device_name: String, target_device_encryption_key: Vec<u8>, sender: UnboundedSender) -> Result<()> {
+async fn _open_stream(target_device_name: String, target_device_encryption_key: Vec<u8>, sender: UnboundedSender<DeviceState>) -> Result<()> {
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;
     adapter.set_powered(true).await?;

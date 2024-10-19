@@ -1251,7 +1251,6 @@ dependencies = [
  "bluest",
  "ctr",
  "futures",
- "futures-util",
  "hex",
  "num_enum",
  "serde",
