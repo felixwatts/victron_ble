@@ -79,8 +79,14 @@ pub use crate::err::*;
 
 #[cfg(target_os = "linux")]
 pub use linux::open_stream;
+#[cfg(target_os = "linux")]
+pub use linux::fetch;
 #[cfg(target_os = "macos")]
 pub use macos::open_stream;
+#[cfg(target_os = "macos")]
+pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec<u8>) -> Result<DeviceState> {
+    unimplemented!()
+}
 
 use record::Record;
 

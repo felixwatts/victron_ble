@@ -9,6 +9,39 @@ use bluer::{Adapter, Address, DeviceProperty, DeviceEvent};
 use futures::StreamExt;
 use crate::parse_manufacturer_data;
 
+pub async fn fetch(target_device_name: String, target_device_encryption_key: Vec<u8>) -> Result<DeviceState> {
+    let session = bluer::Session::new().await?;
+    let adapter = session.default_adapter().await?;
+    adapter.set_powered(true).await?;
+
+    let mut device_events = adapter.discover_devices().await?;
+
+    loop {
+        if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = device_events.next().await {
+            let device = adapter.device(device_addr)?;
+            let device_name = device.name().await?.unwrap_or("(unknown)".to_string());
+            if device_name == target_device_name {
+                let mut change_events = device.events().await?;
+
+                loop{
+                    if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(anyhow!("Device event stream ended"))? {
+                        if let DeviceProperty::ManufacturerData(md) = props {  
+                            if let Some(md) = &md.get(&737u16) {
+                                let parse_result = victron_ble::parse_manufacturer_data(&md, &target_device_encryption_key);
+                                match parse_result{
+                                    Ok(state) => return Ok(state),
+                                    Err(victron_ble::Error::WrongAdvertisement) => {},
+                                    Err(e) => return Err(e.into())
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 /// Continuously monitor device state.
 ///
 /// Will attempt to discover the named device, then continuously listen for device state 
