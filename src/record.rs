@@ -4,8 +4,8 @@ use ctr::cipher::KeyIvInit;
 
 pub (crate) const RECORD_TYPE_TEST_RECORD: u8 = 0x00;
 pub (crate) const RECORD_TYPE_SOLAR_CHARGER: u8 = 0x01;
-
 pub (crate) const VICTRON_MANUFACTURER_ID: u16 = 737;
+
 const MANUFACTURER_DATA_RECORD_TYPE: u8 = 0x10;
 
 type EncryptionAlgorithm = ctr::Ctr128LE<aes::Aes128>;

@@ -60,30 +60,29 @@ async fn _open_stream(
     let adapter = session.default_adapter().await?;
     adapter.set_powered(true).await?;
 
-    let mut device_events = adapter.discover_devices().await?;
+    let mut adapter_events = adapter.discover_devices().await?;
 
     loop {
-        if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = device_events.next().await {
+        if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = adapter_events.next().await {
             let device = adapter.device(device_addr)?;
             let device_name = device.name().await?.unwrap_or("(unknown)".to_string());
             if device_name == target_device_name {
-                let mut change_events = device.events().await?;
+                let mut device_events = device.events().await?;
 
                 loop{
-                    if let DeviceEvent::PropertyChanged(props) = change_events.next().await.ok_or(Error::DeviceEventsChannelError)? {
-                        if let DeviceProperty::ManufacturerData(md) = props {  
-                            if let Some(md) = &md.get(&737u16) {
-                                let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
-                                match parse_result{
-                                    Ok(state) => {
-                                        let send_result = sender.send(Ok(state));
-                                        if send_result.is_err() {
-                                            return Ok(());
-                                        }
-                                    },
-                                    Err(Error::WrongAdvertisement) => {}, // Non fatal error, wait for next advertisement
-                                    Err(e) => return Err(e) // Fatal error, stop
-                                }
+                    let device_event = device_events.next().await.ok_or(Error::DeviceEventsChannelError)?;
+                    if let DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md)) = device_event {
+                        if let Some(md) = &md.get(&crate::record::VICTRON_MANUFACTURER_ID) {
+                            let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
+                            match parse_result{
+                                Ok(state) => {
+                                    let send_result = sender.send(Ok(state));
+                                    if send_result.is_err() {
+                                        return Ok(());
+                                    }
+                                },
+                                Err(Error::WrongAdvertisement) => {}, // Non fatal error, wait for next advertisement
+                                Err(e) => return Err(e) // Fatal error, stop
                             }
                         }
                     }
