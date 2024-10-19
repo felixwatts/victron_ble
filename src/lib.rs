@@ -35,7 +35,7 @@
 //! 
 //!     let mut device_state_stream = victron_ble::open_stream(
 //!         device_name, 
-//!         &device_encryption_key
+//!         device_encryption_key
 //!     ).await;
 //! 
 //!     while let Some(result) = device_state_stream.recv().await {

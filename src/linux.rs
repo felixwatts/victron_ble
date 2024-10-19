@@ -1,6 +1,6 @@
 #![cfg(target_os = "linux")]
 
-//! Linux specific helper functions
+//! Linux specific implementations
 
 use tokio::sync::mpsc::UnboundedReceiver;
 use crate::{err::*, DeviceState};

@@ -24,7 +24,7 @@ use crate::{err::*, DeviceState};
 /// 
 ///     let mut device_state_stream = victron_ble::open_stream(
 ///         device_name, 
-///         &device_encryption_key, 
+///         device_encryption_key, 
 ///         Duration::from_secs(30)
 ///     ).await.unwrap();
 /// 
