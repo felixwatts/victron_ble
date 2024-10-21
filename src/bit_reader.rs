@@ -2,6 +2,13 @@ use crate::err::*;
 
 pub(crate) struct BitReader<'a>{cursor: usize, data: &'a[u8]}
 
+/// The Victron BLE data uses a packed binary format in which numbers can be
+/// represented by artitrary numbers of bits.
+/// 
+/// This struct provides methods for reading numbers from data in the packed
+/// format.
+/// 
+/// Copied from <https://github.com/keshavdv/victron-ble>
 impl<'a> BitReader<'a>{
     pub fn new(data: &'a[u8]) -> Self{
         Self{cursor: 0, data}

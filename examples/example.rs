@@ -21,6 +21,9 @@ async fn main() {
     ).await.unwrap();
 
     while let Some(result) = device_state_stream.next().await {
-        println!("{result:?}");
+        match result {
+            Ok(device_state) => println!("{result:?}"),
+            Err(e) => println!("{e}")
+        }
     }
 }

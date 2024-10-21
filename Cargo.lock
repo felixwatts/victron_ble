@@ -1250,7 +1250,6 @@ dependencies = [
  "bluer 0.17.3",
  "bluest",
  "ctr",
- "futures",
  "hex",
  "num_enum",
  "serde",
