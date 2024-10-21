@@ -14,17 +14,17 @@ aes = "0.8.4"
 ctr = "0.9.2"
 thiserror = "1.0.64"
 num_enum = "0.7.3"
-serde = { version = "1.0.210", optional=true, features = ["derive"]}
 strum = { version = "0.26.3", features = ["derive"] }
 block-padding = "0.3.3"
-futures = "0.3.31"
-tokio = { version =  "1.40.0", features=["sync", "rt"] }
+serde = { version = "1.0.210", optional = true, features = ["derive"]}
+tokio = { version =  "1.40.0", features=["sync", "rt"], optional = true }
+tokio-stream = { version = "0.1.16", optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-bluer = { version = "0.17.3", features=["bluetoothd"] }
+bluer = { version = "0.17.3", features=["bluetoothd"], optional = true}
 
 [target.'cfg(target_os = "macos")'.dependencies]
-bluest = "0.6.7"
+bluest = { version = "0.6.7", optional = true }
 
 [dev-dependencies]
 hex = "0.4"
@@ -33,3 +33,4 @@ tokio = { version =  "1.40.0", features=["full"] }
 
 [features]
 serde = ["dep:serde"]
+bluetooth = [ "dep:tokio", "dep:bluer", "dep:bluest", "dep:tokio-stream" ]

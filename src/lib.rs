@@ -22,11 +22,12 @@
 //! ```
 //! 
 //! If you want the crate to handle the bluetooth side, including discovering the 
-//! device and receiving the manufacturer data then use the `open_stream` function
-//! which currently supports MacOS and Linux.
+//! device and receiving the manufacturer data then enable the `bluetooth` feature and
+//! use the `open_stream` function which currently supports MacOS and Linux.
 //! 
 //! ```rust
 //! # use std::{println, time::Duration};
+//! # use tokio_stream::StreamExt;
 //! #
 //! # #[tokio::main]
 //! # async fn main() {
@@ -38,7 +39,7 @@
 //!         device_encryption_key
 //!     ).await;
 //! 
-//!     while let Some(result) = device_state_stream.recv().await {
+//!     while let Some(result) = device_state_stream.next().await {
 //!         println!("{result:?}");
 //!     }
 //! # }
@@ -77,8 +78,10 @@ pub use model::*;
 pub use crate::err::*;
 
 #[cfg(target_os = "linux")]
+#[cfg(feature = "bluetooth")]
 pub use linux::open_stream;
 #[cfg(target_os = "macos")]
+#[cfg(feature = "bluetooth")]
 pub use macos::open_stream;
 
 use record::Record;

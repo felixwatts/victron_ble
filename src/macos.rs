@@ -1,10 +1,12 @@
 #![cfg(target_os = "macos")]
+#![cfg(feature = "bluetooth")]
 
 //! MacOS specific implementations
 
-use futures::StreamExt;
-use tokio::sync::mpsc::UnboundedReceiver;
 use crate::{err::*, DeviceState};
+use tokio_stream::Stream;
+use tokio_stream::wrappers::UnboundedReceiverStream;
+use tokio_stream::StreamExt;
 
 /// Continuously monitor device state.
 ///
@@ -16,6 +18,7 @@ use crate::{err::*, DeviceState};
 /// 
 ///  ```rust
 /// # use std::{println, time::Duration};
+/// # use tokio_stream::StreamExt;
 /// #
 /// # #[tokio::main]
 /// # async fn main() {
@@ -28,12 +31,15 @@ use crate::{err::*, DeviceState};
 ///         Duration::from_secs(30)
 ///     ).await.unwrap();
 /// 
-///     while let Some(result) = device_state_stream.recv().await {
+///     while let Some(result) = device_state_stream.next().await {
 ///         println/("{result:?}");
 ///     }
 /// # }
 /// ```
-pub async fn open_stream(device_name: String, device_encryption_key: Vec<u8>) -> Result<UnboundedReceiver<Result<DeviceState>>> {
+pub async fn open_stream(
+    device_name: String, 
+    device_encryption_key: Vec<u8>
+) -> Result<impl Stream<Item=Result<DeviceState>>> {
     let adapter = bluest::Adapter::default().await.ok_or(Error::Bluest("Default adapter not found".into()))?;
     adapter.wait_available().await?;
 
@@ -85,5 +91,5 @@ pub async fn open_stream(device_name: String, device_encryption_key: Vec<u8>) ->
         }
     });
 
-    Ok(receiver)
+    Ok(UnboundedReceiverStream::new(receiver))
 }

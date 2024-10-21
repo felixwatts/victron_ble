@@ -21,10 +21,10 @@ let device_state_result = victron_ble::parse_manufacturer_data(&device_manufactu
 
 println!("{device_state_result:?}");
 ```
- 
- If you want the crate to handle the bluetooth side, including discovering the 
- device and receiving the manufacturer data then use the `open_stream` function
- which currently supports MacOS and Linux.
+
+If you want the crate to handle the bluetooth side, including discovering the 
+device and receiving the manufacturer data then enable the `bluetooth` feature and
+use the `open_stream` function which currently supports MacOS and Linux.
  
  ```rust
 let device_name = "Victon Bluetooth device name";
@@ -35,7 +35,7 @@ let mut device_state_stream = victron_ble::open_stream(
     device_encryption_key
 ).await;
 
-while let Some(result) = device_state_stream.recv().await {
+while let Some(result) = device_state_stream.next().await {
     println!("{result:?}");
 }
  ```

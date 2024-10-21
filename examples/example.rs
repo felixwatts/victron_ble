@@ -1,4 +1,7 @@
+#![cfg(feature = "bluetooth")]
+
 use std::{env, println};
+use tokio_stream::StreamExt;
 
 #[tokio::main]
 async fn main() {
@@ -17,7 +20,7 @@ async fn main() {
         device_encryption_key
     ).await.unwrap();
 
-    while let Some(result) = device_state_stream.recv().await {
+    while let Some(result) = device_state_stream.next().await {
         println!("{result:?}");
     }
 }

@@ -1,13 +1,15 @@
 #![cfg(target_os = "linux")]
+#![cfg(feature = "bluetooth")]
 
 //! Linux specific implementations
 
 use tokio::sync::mpsc::UnboundedReceiver;
 use crate::{err::*, DeviceState};
 use bluer::{DeviceProperty, DeviceEvent};
-use futures::StreamExt;
+use tokio_stream::StreamExt;
 use crate::parse_manufacturer_data;
-use tokio::sync::mpsc::UnboundedSender;
+use tokio_stream::Stream;
+use tokio_stream::wrappers::UnboundedReceiverStream;
 
 /// Continuously monitor device state.
 ///
@@ -19,6 +21,7 @@ use tokio::sync::mpsc::UnboundedSender;
 /// 
 ///  ```rust
 /// # use std::{println, time::Duration};
+/// # use tokio_stream::StreamExt;
 /// #
 /// # #[tokio::main]
 /// # async fn main() {
@@ -30,14 +33,14 @@ use tokio::sync::mpsc::UnboundedSender;
 ///         device_encryption_key
 ///     ).await;
 /// 
-///     while let Some(result) = device_state_stream.recv().await {
+///     while let Some(result) = device_state_stream.next().await {
 ///         println!("{result:?}");
 ///     }
 /// # }
 /// ```
 pub async fn open_stream(
     device_name: String, device_encryption_key: Vec<u8>
-) -> Result<UnboundedReceiver<Result<DeviceState>>> {
+) -> Result<impl Stream<Item=Result<DeviceState>>> {
     let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
 
     tokio::spawn(async move {
@@ -47,7 +50,7 @@ pub async fn open_stream(
         }
     });
 
-    Ok(receiver)
+    Ok(UnboundedReceiverStream::new(receiver))
 }
 
 async fn _open_stream(

@@ -1257,6 +1257,7 @@ dependencies = [
  "strum 0.26.3",
  "thiserror",
  "tokio",
+ "tokio-stream",
 ]
 
 [[package]]
