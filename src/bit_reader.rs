@@ -31,9 +31,15 @@ impl<'a> BitReader<'a>{
             return Err(Error::InvalidData("The data was shorter than expected.".into()));
         }
 
-        let bit = (self.data[self.cursor / 8] >> (self.cursor % 8)) & 1 == 1;
+        let byte = self.cursor / 8;
+        let bit = self.cursor % 8;
+        let byte_val = self.data[byte];
+        let bit_val = (byte_val >> bit) & 1;
+        let is_bit_set = bit_val == 1;
+
         self.cursor += 1;
-        Ok(bit)
+
+        Ok(is_bit_set)
     }
 }
 
