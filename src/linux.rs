@@ -10,6 +10,7 @@ use tokio_stream::StreamExt;
 use crate::parse_manufacturer_data;
 use tokio_stream::Stream;
 use tokio_stream::wrappers::UnboundedReceiverStream;
+use tokio::sync::mpsc::UnboundedSender;
 
 /// Continuously monitor device state.
 ///
