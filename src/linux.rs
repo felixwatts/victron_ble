@@ -59,18 +59,29 @@ async fn _open_stream(
     target_device_encryption_key: Vec<u8>, 
     sender: UnboundedSender<Result<DeviceState>>
 ) -> Result<()> {
+    println!("1");
     let session = bluer::Session::new().await?;
+    println!("2");
     let adapter = session.default_adapter().await?;
+    println!("3");
     adapter.set_powered(true).await?;
+    println!("4");
 
     let mut adapter_events = adapter.discover_devices().await?;
 
+    println!("5");
+
     loop {
-        if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = adapter_events.next().await {
+        let ev = adapter_events.next().await;
+        println!("6 {ev:?}");
+        if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = ev {
+            println!("7");
             let device = adapter.device(device_addr)?;
+            println!("8");
             let device_name = device.name().await?.unwrap_or("(unknown)".to_string());
+            println!("9 {device_name}");
             if device_name == target_device_name {
-                println!("victron_ble: found device: {}", device_name);
+                println!("10 victron_ble: found device: {}", device_name);
                 let mut device_events = device.events().await?;
 
                 loop{
