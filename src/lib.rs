@@ -1,9 +1,10 @@
-//! # victron_ble
+//! # Victron BLE
 //! 
-//! Read data from Victron devices over Bluetooth Low Energy
-//!
-//! Some Victron devices publish status data continuously over Bluetooth using the
-//! BLE advertising data protocol. This crate makes it easy to access that data.
+//! Read data from Victron devices over Bluetooth Low Energy.
+//! 
+//! Some Victron devices broadcast some aspects of their state over Bluetooth on a regular basis. This crate makes it easy to access that data.
+//! 
+//! Currently only Solar Charger type devices are supported but support can be added for other device types if requested.
 //! 
 //! ## Basic Usage
 //! 
