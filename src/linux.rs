@@ -1,7 +1,7 @@
 #![cfg(target_os = "linux")]
 #![cfg(feature = "bluetooth")]
 
-//! Linux specific implementations
+//! Linux specific implementation
 
 use tokio::sync::mpsc::UnboundedReceiver;
 use crate::{err::*, DeviceState};
@@ -12,96 +12,30 @@ use tokio_stream::Stream;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use tokio::sync::mpsc::UnboundedSender;
 
-/// Continuously monitor device state.
-///
-/// Will attempt to discover the named device, then continuously listen for device state 
-/// bluetooth broadcasts which will each be decrypted, parsed and sent to the user
-/// via a `tokio::sync::mpsc::UnboundedReceiver`.
-/// 
-/// # Example
-/// 
-///  ```rust
-/// # use std::{println, time::Duration};
-/// # use tokio_stream::StreamExt;
-/// #
-/// # #[tokio::main]
-/// # async fn main() {
-///     let device_name = "Victon Bluetooth device name";
-///     let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
-/// 
-///     let mut device_state_stream = victron_ble::open_stream(
-///         device_name.into(), 
-///         device_encryption_key
-///     ).await;
-/// 
-///     while let Some(result) = device_state_stream.next().await {
-///         println!("{result:?}");
-///     }
-/// # }
-/// ```
-pub async fn open_stream(
-    device_name: String, device_encryption_key: Vec<u8>
-) -> Result<impl Stream<Item=Result<DeviceState>>> {
-    let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
-
-    tokio::spawn(async move {
-        let result = _open_stream(device_name, device_encryption_key, sender.clone()).await;
-        if let Err(e) = result {
-            let _ = sender.send(Err(e));
-        }
-    });
-
-    Ok(UnboundedReceiverStream::new(receiver))
-}
-
-async fn _open_stream(
+pub(crate) async fn open_stream(
     target_device_name: String, 
     target_device_encryption_key: Vec<u8>, 
     sender: UnboundedSender<Result<DeviceState>>
 ) -> Result<()> {
-    println!("1");
     let session = bluer::Session::new().await?;
-    println!("2");
     let adapter = session.default_adapter().await?;
-    println!("3");
     adapter.set_powered(true).await?;
-    println!("4");
 
     let mut adapter_events = adapter.discover_devices().await?;
 
-    println!("5");
-
     loop {
         let ev = adapter_events.next().await;
-        println!("6 {ev:?}");
         if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = ev {
-            println!("7");
             let device = adapter.device(device_addr)?;
-            println!("8");
             let device_name = device.name().await?.unwrap_or("(unknown)".to_string());
-            println!("9 {device_name}");
             if device_name == target_device_name {
-                println!("10 victron_ble: found device: {}", device_name);
                 let mut device_events = device.events().await?;
 
                 loop{
                     let device_event = device_events.next().await.ok_or(Error::DeviceEventsChannelError)?;
                     if let DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md)) = device_event {
                         if let Some(md) = &md.get(&crate::record::VICTRON_MANUFACTURER_ID) {
-                            let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
-                            match parse_result{
-                                Ok(state) => {
-                                    let send_result = sender.send(Ok(state));
-                                    if send_result.is_err() {
-                                        return Ok(())
-                                    }
-                                }
-                                Err(Error::WrongAdvertisement) => {}, // Non fatal error, wait for next advertisement
-                                Err(e) => {
-                                    let _ = sender.send(Err(e));
-                                    return Ok(()) // Fatal error, stop
-                                }
-                            }
+                            crate::handle_manufacturer_data()?;
                         }
                     }
                 }

@@ -1,5 +1,3 @@
-#![cfg(feature = "bluetooth")]
-
 use std::{env, println};
 use tokio_stream::StreamExt;
 
@@ -22,7 +20,7 @@ async fn main() {
 
     while let Some(result) = device_state_stream.next().await {
         match result {
-            Ok(device_state) => println!("{result:?}"),
+            Ok(_device_state) => println!("{result:?}"),
             Err(e) => println!("{e}")
         }
     }

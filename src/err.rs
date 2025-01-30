@@ -2,7 +2,7 @@ use aes::cipher::StreamCipherError;
 use num_enum::TryFromPrimitiveError;
 use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Clone)]
 pub enum Error{
     #[error("An error occured in the MacOS bluetooth layer: {0}")]
     Bluest(String),
@@ -21,11 +21,12 @@ pub enum Error{
     #[error("Invalid device encryption key. The Device encryption key provided is of the wrong length.")]
     InvalidDeviceEncryptionKey,
     #[error("Unsupported device type. Please raise an issue at https://github.com/felixwatts/victron_ble quoting the device type code: {0}")]
-    UnsupportedDeviceType(u8)
+    UnsupportedDeviceType(u8),
+    #[error("Channel closed by client")]
+    ClientClosedChannel
 }
 
 #[cfg(target_os = "macos")]
-#[cfg(feature = "bluetooth")]
 impl From<bluest::Error> for Error{
     fn from(e: bluest::Error) -> Self {
         Error::Bluest(e.to_string())
@@ -33,7 +34,6 @@ impl From<bluest::Error> for Error{
 }
 
 #[cfg(target_os = "linux")]
-#[cfg(feature = "bluetooth")]
 impl From<bluer::Error> for Error{
     fn from(e: bluer::Error) -> Self {
         Error::Bluer(e.to_string())
