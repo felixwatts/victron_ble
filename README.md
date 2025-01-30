@@ -12,23 +12,17 @@ Use the `open_stream` function to get a stream of state updates for a given
 Victron device:
 
 ```rust
-# use std::{println, time::Duration};
-# use tokio_stream::StreamExt;
-#
-# #[tokio::main]
-# async fn main() {
-    let device_name = "Victon Bluetooth device name";
-    let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
+let device_name = "Victon Bluetooth device name";
+let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
 
-    let mut device_state_stream = victron_ble::open_stream(
-        device_name, 
-        device_encryption_key
-    ).unwrap();
+let mut device_state_stream = victron_ble::open_stream(
+    device_name, 
+    device_encryption_key
+).unwrap();
 
-    while let Some(result) = device_state_stream.next().await {
-        println!("{result:?}");
-    }
-# }
+while let Some(result) = device_state_stream.next().await {
+    println!("{result:?}");
+}
 ```
 
 ## Encryption Key
