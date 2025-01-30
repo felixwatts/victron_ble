@@ -79,11 +79,16 @@ async fn _open_stream(
                         if let Some(md) = &md.get(&crate::record::VICTRON_MANUFACTURER_ID) {
                             let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
                             match parse_result{
-                                Ok(state) => sender.send(Ok(state))?,
+                                Ok(state) => {
+                                    let send_result = sender.send(Ok(state));
+                                    if send_result.is_err() {
+                                        return Ok(())
+                                    }
+                                }
                                 Err(Error::WrongAdvertisement) => {}, // Non fatal error, wait for next advertisement
                                 Err(e) => {
-                                    sender.send(Err(e))?;
-                                    return Err(e) // Fatal error, stop
+                                    let _ = sender.send(Err(e));
+                                    return Ok(()) // Fatal error, stop
                                 }
                             }
                         }
