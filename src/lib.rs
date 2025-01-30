@@ -72,7 +72,7 @@ use tokio_stream::{wrappers::UnboundedReceiverStream, Stream};
 pub use crate::err::*;
 
 #[cfg(target_os = "linux")]
-pub use linux::open_stream as _open_stream;
+use linux::open_stream as _open_stream;
 #[cfg(target_os = "macos")]
 use macos::open_stream as _open_stream;
 

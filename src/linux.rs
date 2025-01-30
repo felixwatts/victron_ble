@@ -1,5 +1,4 @@
 #![cfg(target_os = "linux")]
-#![cfg(feature = "bluetooth")]
 
 //! Linux specific implementation
 
@@ -15,7 +14,7 @@ use tokio::sync::mpsc::UnboundedSender;
 pub(crate) async fn open_stream(
     target_device_name: String, 
     target_device_encryption_key: Vec<u8>, 
-    sender: UnboundedSender<Result<DeviceState>>
+    mut sender: UnboundedSender<Result<DeviceState>>
 ) -> Result<()> {
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;
@@ -35,7 +34,7 @@ pub(crate) async fn open_stream(
                     let device_event = device_events.next().await.ok_or(Error::DeviceEventsChannelError)?;
                     if let DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md)) = device_event {
                         if let Some(md) = &md.get(&crate::record::VICTRON_MANUFACTURER_ID) {
-                            crate::handle_manufacturer_data()?;
+                            crate::handle_manufacturer_data(md, &target_device_encryption_key, &mut sender)?;
                         }
                     }
                 }
