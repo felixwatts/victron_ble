@@ -62,9 +62,7 @@ mod bit_reader;
 mod record;
 mod err;
 mod model;
-#[cfg(target_os = "linux")]
 mod linux;
-#[cfg(target_os = "macos")]
 mod macos;
 
 pub use model::*;
