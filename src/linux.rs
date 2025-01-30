@@ -70,6 +70,7 @@ async fn _open_stream(
             let device = adapter.device(device_addr)?;
             let device_name = device.name().await?.unwrap_or("(unknown)".to_string());
             if device_name == target_device_name {
+                println!("victron_ble: found device: {}", device_name);
                 let mut device_events = device.events().await?;
 
                 loop{
@@ -78,14 +79,12 @@ async fn _open_stream(
                         if let Some(md) = &md.get(&crate::record::VICTRON_MANUFACTURER_ID) {
                             let parse_result = parse_manufacturer_data(&md, &target_device_encryption_key);
                             match parse_result{
-                                Ok(state) => {
-                                    let send_result = sender.send(Ok(state));
-                                    if send_result.is_err() {
-                                        return Ok(());
-                                    }
-                                },
+                                Ok(state) => sender.send(Ok(state))?,
                                 Err(Error::WrongAdvertisement) => {}, // Non fatal error, wait for next advertisement
-                                Err(e) => return Err(e) // Fatal error, stop
+                                Err(e) => {
+                                    sender.send(Err(e))?;
+                                    return Err(e) // Fatal error, stop
+                                }
                             }
                         }
                     }
