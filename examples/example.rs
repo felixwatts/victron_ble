@@ -16,7 +16,7 @@ async fn main() {
     let mut device_state_stream = victron_ble::open_stream(
         device_name.into(), 
         device_encryption_key
-    ).await.unwrap();
+    ).unwrap();
 
     while let Some(result) = device_state_stream.next().await {
         match result {
