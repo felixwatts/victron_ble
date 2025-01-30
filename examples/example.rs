@@ -11,7 +11,7 @@ async fn main() {
     }
 
     let device_name = args.get(1).unwrap();
-    let device_encryption_key = hex::decode(args.get(2).unwrap()).unwrap();
+    let device_encryption_key = hex::decode(args.get(2).unwrap()).expect("Invalid device encryption key, it should be hex encoded.");
 
     let mut device_state_stream = victron_ble::open_stream(
         device_name.into(), 
