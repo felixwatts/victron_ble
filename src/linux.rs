@@ -2,19 +2,19 @@
 
 //! Linux specific implementation
 
-use tokio::sync::mpsc::UnboundedReceiver;
-use crate::{err::*, DeviceState};
-use bluer::{DeviceProperty, DeviceEvent};
-use tokio_stream::StreamExt;
 use crate::parse_manufacturer_data;
-use tokio_stream::Stream;
-use tokio_stream::wrappers::UnboundedReceiverStream;
+use crate::{err::*, DeviceState};
+use bluer::{DeviceEvent, DeviceProperty};
+use tokio::sync::mpsc::UnboundedReceiver;
 use tokio::sync::mpsc::UnboundedSender;
+use tokio_stream::wrappers::UnboundedReceiverStream;
+use tokio_stream::Stream;
+use tokio_stream::StreamExt;
 
 pub(crate) async fn open_stream(
-    target_device_name: String, 
-    target_device_encryption_key: Vec<u8>, 
-    mut sender: UnboundedSender<Result<DeviceState>>
+    target_device_name: String,
+    target_device_encryption_key: Vec<u8>,
+    mut sender: UnboundedSender<Result<DeviceState>>,
 ) -> Result<()> {
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;
@@ -30,11 +30,20 @@ pub(crate) async fn open_stream(
             if device_name == target_device_name {
                 let mut device_events = device.events().await?;
 
-                loop{
-                    let device_event = device_events.next().await.ok_or(Error::DeviceEventsChannelError)?;
-                    if let DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md)) = device_event {
+                loop {
+                    let device_event = device_events
+                        .next()
+                        .await
+                        .ok_or(Error::DeviceEventsChannelError)?;
+                    if let DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md)) =
+                        device_event
+                    {
                         if let Some(md) = &md.get(&crate::record::VICTRON_MANUFACTURER_ID) {
-                            crate::handle_manufacturer_data(md, &target_device_encryption_key, &mut sender)?;
+                            crate::handle_manufacturer_data(
+                                md,
+                                &target_device_encryption_key,
+                                &mut sender,
+                            )?;
                         }
                     }
                 }
