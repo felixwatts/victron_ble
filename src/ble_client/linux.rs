@@ -1,5 +1,3 @@
-#![cfg(target_os = "linux")]
-
 //! Linux specific implementation
 
 use crate::parse_manufacturer_data;

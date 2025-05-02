@@ -60,9 +60,9 @@
 //! - <https://github.com/PeterGrace/vedirect_rs>
 
 mod bit_reader;
+#[cfg(feature = "ble_client")]
+mod ble_client;
 mod err;
-mod linux;
-mod macos;
 mod model;
 mod record;
 
@@ -70,11 +70,6 @@ pub use crate::err::*;
 pub use model::*;
 use tokio::sync::mpsc::UnboundedSender;
 use tokio_stream::{wrappers::UnboundedReceiverStream, Stream};
-
-#[cfg(target_os = "linux")]
-use linux::open_stream as _open_stream;
-#[cfg(target_os = "macos")]
-use macos::open_stream as _open_stream;
 
 use record::Record;
 
@@ -114,6 +109,7 @@ pub fn parse_manufacturer_data(
 ///     }
 /// # }
 /// ```
+#[cfg(feature = "ble_client")]
 pub fn open_stream(
     device_name: String,
     device_encryption_key: Vec<u8>,
@@ -121,7 +117,7 @@ pub fn open_stream(
     let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
 
     tokio::spawn(async move {
-        let _ = _open_stream(device_name, device_encryption_key, sender.clone()).await;
+        let _ = ble_client::open_stream(device_name, device_encryption_key, sender.clone()).await;
     });
 
     Ok(UnboundedReceiverStream::new(receiver))
