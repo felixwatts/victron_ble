@@ -4,6 +4,7 @@ use crate::err::*;
 use super::error_state::ErrorState;
 use super::mode::Mode;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 pub struct SolarChargerState{
     pub mode: Mode,
