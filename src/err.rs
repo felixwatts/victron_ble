@@ -28,14 +28,14 @@ pub enum Error {
     ClientClosedChannel,
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(all(target_os = "macos", feature = "ble_client"))]
 impl From<bluest::Error> for Error {
     fn from(e: bluest::Error) -> Self {
         Error::Bluest(e.to_string())
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(all(target_os = "linux", feature = "ble_client"))]
 impl From<bluer::Error> for Error {
     fn from(e: bluer::Error) -> Self {
         Error::Bluer(e.to_string())

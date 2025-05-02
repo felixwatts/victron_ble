@@ -69,6 +69,7 @@ mod record;
 pub use crate::err::*;
 pub use model::*;
 use tokio::sync::mpsc::UnboundedSender;
+#[cfg(feature = "ble_client")]
 use tokio_stream::{wrappers::UnboundedReceiverStream, Stream};
 
 use record::Record;
