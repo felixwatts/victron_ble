@@ -11,17 +11,16 @@ async fn main() {
     }
 
     let device_name = args.get(1).unwrap();
-    let device_encryption_key = hex::decode(args.get(2).unwrap()).expect("Invalid device encryption key, it should be hex encoded.");
+    let device_encryption_key = hex::decode(args.get(2).unwrap())
+        .expect("Invalid device encryption key, it should be hex encoded.");
 
-    let mut device_state_stream = victron_ble::open_stream(
-        device_name.into(), 
-        device_encryption_key
-    ).unwrap();
+    let mut device_state_stream =
+        victron_ble::open_stream(device_name.into(), device_encryption_key).unwrap();
 
     while let Some(result) = device_state_stream.next().await {
         match result {
             Ok(_device_state) => println!("{result:?}"),
-            Err(e) => println!("{e}")
+            Err(e) => println!("{e}"),
         }
     }
 }

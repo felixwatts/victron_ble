@@ -1,5 +1,3 @@
-#![cfg(target_os = "macos")]
-
 //! MacOS specific implementation
 
 use crate::{err::*, DeviceState};
