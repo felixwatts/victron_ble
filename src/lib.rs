@@ -140,9 +140,11 @@ fn handle_manufacturer_data(
             Err(e)
         },
         Ok(device_state) => {
-            let _ = sender.send(Ok(device_state));
-            // If consumer has dropped the channel then stop
-            Err(Error::ClientClosedChannel)
+            if sender.send(Ok(device_state)).is_err() {
+                // If consumer has dropped the channel then stop
+                return Err(Error::ClientClosedChannel);
+            }
+            Ok(())
         }
     }
 }
