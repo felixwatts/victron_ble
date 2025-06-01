@@ -1,5 +1,6 @@
 use crate::err::*;
 
+#[derive(Clone)]
 pub(crate) struct BitReader<'a>{cursor: usize, data: &'a[u8]}
 
 /// The Victron BLE data uses a packed binary format in which numbers can be
@@ -31,6 +32,11 @@ impl<'a> BitReader<'a>{
             value -= 1i64 << (num_bits - 1)
         }
         Ok(value)
+    }
+
+    pub fn skip(&mut self, num_bits: usize) -> Result<()> {
+        self.read_unsigned_int(num_bits)?;
+        Ok(())
     }
 
     fn read_bit(&mut self) -> Result<bool> {

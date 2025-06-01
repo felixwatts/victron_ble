@@ -84,9 +84,9 @@ dependencies = [
 
 [[package]]
 name = "bitflags"
-version = "2.6.0"
+version = "2.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
+checksum = "1b8e56985ec62d17e9c1001dc89c88ecd7dc08e47eba5ec7c29c7b5eeecde967"
 
 [[package]]
 name = "block"
@@ -1246,6 +1246,7 @@ name = "victron_ble"
 version = "0.2.3"
 dependencies = [
  "aes",
+ "bitflags",
  "block-padding",
  "bluer 0.17.3",
  "bluest",

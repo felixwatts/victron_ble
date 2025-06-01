@@ -2,13 +2,9 @@
 
 //! Linux specific implementation
 
-use tokio::sync::mpsc::UnboundedReceiver;
 use crate::{err::*, DeviceState};
 use bluer::{DeviceProperty, DeviceEvent};
 use tokio_stream::StreamExt;
-use crate::parse_manufacturer_data;
-use tokio_stream::Stream;
-use tokio_stream::wrappers::UnboundedReceiverStream;
 use tokio::sync::mpsc::UnboundedSender;
 
 pub(crate) async fn open_stream(
