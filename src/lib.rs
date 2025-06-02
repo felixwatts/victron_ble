@@ -17,8 +17,8 @@
 //! #
 //! # #[tokio::main]
 //! # async fn main() {
-//!     let device_name = "Victon Bluetooth device name";
-//!     let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
+//!     let device_name = "Victon Bluetooth device name".into();
+//!     let device_encryption_key = hex::decode("00"/* Victron device encryption key. See below. */).unwrap();
 //!
 //!     let mut device_state_stream = victron_ble::open_stream(
 //!         device_name,
@@ -47,7 +47,7 @@
 //!
 //! An example application is provided which prints the state of a given device to to the terminal.
 //!
-//! ```
+//! ```shell
 //! cargo run --example example <Victron device name> <Victron device encryption key>
 //! ```
 //!
@@ -101,7 +101,7 @@ pub fn parse_manufacturer_data(
 /// #
 /// # #[tokio::main]
 /// # async fn main() {
-///     let device_name = "Victon Bluetooth device name";
+///     let device_name = "Victon Bluetooth device name".into();
 ///     let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
 ///
 ///     let mut device_state_stream = victron_ble::open_stream(
