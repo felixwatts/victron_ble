@@ -1,0 +1,1 @@
+These are the official Victron protocol definition documents for VE.Direct and the BLE Extra Manufacturer Data.

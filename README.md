@@ -4,15 +4,13 @@ Read data from Victron devices over Bluetooth Low Energy.
 
 Some Victron devices broadcast some aspects of their state over Bluetooth on a regular basis. This crate makes it easy to access that data.
 
-Currently only Solar Charger type devices are supported but support can be added for other device types if requested.
-
 ## Basic Usage
 
 Use the `open_stream` function to get a stream of state updates for a given
 Victron device:
 
 ```rust
-let device_name = "Victon Bluetooth device name";
+let device_name = "Victron Bluetooth device name";
 let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
 
 let mut device_state_stream = victron_ble::open_stream(
@@ -28,10 +26,19 @@ while let Some(result) = device_state_stream.next().await {
 ## Encryption Key
 
 The device status messages published by the Victron device are encrypted. In order
-to decrypt them the device encyption key is needed. This can be found for a given
+to decrypt them the device encryption key is needed. This can be found for a given
 device using the Victron Connect app on iOS or Android.
 
 Using the app, connect to the device, then go to Settings -> Product Info -> Encryption data.
+
+## Supported Device Types
+
+Currently the following device types are supported.
+
+> Support can be added for other device types if requested.
+
+- Solar Charger
+- Battery Monitor
 
 ## Serialization
 
@@ -45,7 +52,7 @@ An example application is provided which prints the state of a given device to t
 cargo run --example example <Victron device name> <Victron device encryption key>
 ```
 
-## Ackowledgements
+## Acknowledgements
 
 Various aspects of this crate are either inspired by or copied from these
 projects:
