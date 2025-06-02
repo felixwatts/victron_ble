@@ -1,3 +1,8 @@
+# 0.3.1
+
+- Fix: make more model structs public.
+- Fix: doc tests
+
 # 0.3.0
 
 - Fix: `open_stream` stream ends after one item.

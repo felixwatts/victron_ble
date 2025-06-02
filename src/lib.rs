@@ -17,7 +17,7 @@
 //! #
 //! # #[tokio::main]
 //! # async fn main() {
-//!     let device_name = "Victon Bluetooth device name".into();
+//!     let device_name = "Victron Bluetooth device name".into();
 //!     let device_encryption_key = hex::decode("00"/* Victron device encryption key. See below. */).unwrap();
 //!
 //!     let mut device_state_stream = victron_ble::open_stream(
@@ -34,7 +34,7 @@
 //! ## Encryption Key
 //!
 //! The device status messages published by the Victron device are encrypted. In order
-//! to decrypt them the device encyption key is needed. This can be found for a given
+//! to decrypt them the device encryption key is needed. This can be found for a given
 //! device using the Victron Connect app on iOS or Android.
 //!
 //! Using the app, connect to the device, then go to Settings -> Product Info -> Encryption data.
@@ -51,7 +51,7 @@
 //! cargo run --example example <Victron device name> <Victron device encryption key>
 //! ```
 //!
-//! ## Ackowledgements
+//! ## Acknowledgements
 //!
 //! Various aspects of this crate are either inspired by or copied from these
 //! projects:
@@ -78,7 +78,7 @@ use macos::open_stream as _open_stream;
 
 use record::Record;
 
-/// Decrypyt and parse the content of the manufacturer data published by a Victron device.
+/// Decrypt and parse the content of the manufacturer data published by a Victron device.
 pub fn parse_manufacturer_data(
     manufacturer_data: &[u8],
     device_encryption_key: &[u8],
@@ -101,8 +101,8 @@ pub fn parse_manufacturer_data(
 /// #
 /// # #[tokio::main]
 /// # async fn main() {
-///     let device_name = "Victon Bluetooth device name".into();
-///     let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
+///     let device_name = "Victron Bluetooth device name".into();
+///     let device_encryption_key = hex::decode("00").unwrap();
 ///
 ///     let mut device_state_stream = victron_ble::open_stream(
 ///         device_name,
