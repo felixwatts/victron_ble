@@ -1,6 +1,7 @@
 use num_enum::TryFromPrimitive;
 use strum::Display;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Eq, PartialEq, TryFromPrimitive, Copy, Clone, Ord, PartialOrd, Hash, Display)]
 #[repr(u64)]
 pub enum Mode {

@@ -1,6 +1,7 @@
 use crate::bit_reader::BitReader;
 use crate::err::*;
 
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct TestRecordState{
     pub uptime_s: u64,
