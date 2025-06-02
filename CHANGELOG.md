@@ -1,3 +1,8 @@
+# NEXT breaking
+
+- Fix: make `TestRecordState` public.
+- Fix: rename `DeviceState::InverterState` to `DeviceState::Inverter`
+
 # 0.3.1
 
 - Fix: make more model structs public.

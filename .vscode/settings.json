@@ -5,6 +5,7 @@
         "println",
         "repr",
         "serde",
+        "Synchronised",
         "thiserror",
         "Victron"
     ]
