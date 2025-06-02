@@ -9,7 +9,7 @@ pub enum ErrorState {
     BatteryVoltsTooHigh = 2,
     ChargerTemperatureTooHigh = 17,
     ChargerOverCurrent = 18,
-    ChargerCurrentReversed =19,
+    ChargerCurrentReversed = 19,
     BulkTimeLimitExceeded = 20,
     CurrentSensorIssue = 21,
     TerminalsOverheated = 26,
@@ -24,5 +24,5 @@ pub enum ErrorState {
     NetworkMisconfigured = 68,
     FactoryCalibrationDataLost = 116,
     InvalidFirmware = 117,
-    UserSettingsInvalid = 119
+    UserSettingsInvalid = 119,
 }
