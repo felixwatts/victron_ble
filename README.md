@@ -39,6 +39,7 @@ Currently the following device types are supported.
 
 - Solar Charger
 - Battery Monitor
+- Inverter
 
 ## Serialization
 

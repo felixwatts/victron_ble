@@ -2,6 +2,7 @@ use bitflags::bitflags;
 
 bitflags! {
     #[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
+    #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
     pub struct AlarmReason: i64 {
         const LowVoltage            = 1;
         const HighVoltage           = 2;

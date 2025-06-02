@@ -2,6 +2,7 @@ mod alarm_reason;
 mod battery_monitor_state;
 mod device_state;
 mod error_state;
+mod inverter_state;
 mod mode;
 mod solar_charger_state;
 mod test_record_state;
