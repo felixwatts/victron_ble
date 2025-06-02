@@ -3,7 +3,7 @@ use num_enum::TryFromPrimitiveError;
 use thiserror::Error;
 
 #[derive(Error, Debug, Clone)]
-pub enum Error{
+pub enum Error {
     #[error("An error occured in the MacOS bluetooth layer: {0}")]
     Bluest(String),
     #[error("An error occured in the Linux bluetooth layer: {0}")]
@@ -18,35 +18,37 @@ pub enum Error{
     InvalidData(String),
     #[error("Incorrect device encryption key. The Device encryption key provided is not correct for this device.")]
     IncorrectDeviceEncryptionKey,
-    #[error("Invalid device encryption key. The Device encryption key provided is of the wrong length.")]
+    #[error(
+        "Invalid device encryption key. The Device encryption key provided is of the wrong length."
+    )]
     InvalidDeviceEncryptionKey,
     #[error("Unsupported device type. Please raise an issue at https://github.com/felixwatts/victron_ble quoting the device type code: {0}")]
     UnsupportedDeviceType(u8),
     #[error("Channel closed by client")]
-    ClientClosedChannel
+    ClientClosedChannel,
 }
 
 #[cfg(target_os = "macos")]
-impl From<bluest::Error> for Error{
+impl From<bluest::Error> for Error {
     fn from(e: bluest::Error) -> Self {
         Error::Bluest(e.to_string())
     }
 }
 
 #[cfg(target_os = "linux")]
-impl From<bluer::Error> for Error{
+impl From<bluer::Error> for Error {
     fn from(e: bluer::Error) -> Self {
         Error::Bluer(e.to_string())
     }
 }
 
-impl From<StreamCipherError> for Error{
+impl From<StreamCipherError> for Error {
     fn from(e: StreamCipherError) -> Self {
         Error::InvalidData(format!("The data could not be decrypted: {e}"))
     }
 }
 
-impl<T: num_enum::TryFromPrimitive> From<TryFromPrimitiveError<T>> for Error{
+impl<T: num_enum::TryFromPrimitive> From<TryFromPrimitiveError<T>> for Error {
     fn from(e: TryFromPrimitiveError<T>) -> Self {
         Error::InvalidData(format!("Unexpected value: {e}"))
     }
