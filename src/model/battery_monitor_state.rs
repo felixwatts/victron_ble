@@ -3,6 +3,7 @@ use crate::bit_reader::BitReader;
 use crate::err::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct BatteryMonitorState {
     pub time_to_go_mins: f32,
     pub battery_voltage_v: f32,
@@ -14,6 +15,7 @@ pub struct BatteryMonitorState {
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum AuxInput {
     VoltageV(f32),
     MidVoltageV(f32),
@@ -32,20 +34,20 @@ impl BatteryMonitorState {
 
         // we need to read the next two fields out of order because
         // the format of the former depends on the latter.
-        let mut aux_value_reader = reader.clone();
+        let mut aux_input_reader = reader.clone();
         reader.skip(16)?;
-        let aux_input = reader.read_unsigned_int(2)?;
-        let aux_val = match aux_input {
+        let aux_input_type = reader.read_unsigned_int(2)?;
+        let aux_input = match aux_input_type {
             0 => {
-                let aux_voltage = aux_value_reader.read_signed_int(16)? as f32 / 100.0;
+                let aux_voltage = aux_input_reader.read_signed_int(16)? as f32 / 100.0;
                 AuxInput::VoltageV(aux_voltage)
             }
             1 => {
-                let mid_voltage = aux_value_reader.read_unsigned_int(16)? as f32 / 100.0;
+                let mid_voltage = aux_input_reader.read_unsigned_int(16)? as f32 / 100.0;
                 AuxInput::MidVoltageV(mid_voltage)
             }
             2 => {
-                let temperature = aux_value_reader.read_unsigned_int(16)? as f32 / 100.0;
+                let temperature = aux_input_reader.read_unsigned_int(16)? as f32 / 100.0;
                 AuxInput::TemperatureK(temperature)
             }
             3 => AuxInput::None,
@@ -60,7 +62,7 @@ impl BatteryMonitorState {
             time_to_go_mins,
             battery_voltage_v,
             alarm_reason,
-            aux_input: aux_val,
+            aux_input,
             battery_current_a,
             consumed_amp_hours_ah,
             state_of_charge_pct,
