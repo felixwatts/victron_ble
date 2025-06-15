@@ -1,5 +1,4 @@
 #![cfg_attr(not(feature = "bluetooth"), no_std)]
-#![feature(ascii_char)]
 
 //! # Victron BLE
 //!
@@ -73,7 +72,6 @@
 //! - <https://github.com/PeterGrace/vedirect_rs>
 
 mod bit_reader;
-#[cfg(feature = "bluetooth")]
 mod bluetooth;
 mod err;
 mod model;
