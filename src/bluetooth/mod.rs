@@ -1,7 +1,7 @@
 #![cfg(feature = "bluetooth")]
 
-mod macos;
 mod linux;
+mod macos;
 
 use crate::{err::*, DeviceState};
 use tokio::sync::mpsc::UnboundedSender;
@@ -61,7 +61,8 @@ fn handle_manufacturer_data(
     device_encryption_key: &[u8],
     sender: &mut UnboundedSender<Result<DeviceState>>,
 ) -> Result<()> {
-    let device_state_result = super::parse_manufacturer_data(manufacturer_data, device_encryption_key);
+    let device_state_result =
+        super::parse_manufacturer_data(manufacturer_data, device_encryption_key);
 
     match device_state_result {
         Err(Error::WrongAdvertisement) => Ok(()), // Message irrelevant to user, wait for next advertisement

@@ -60,14 +60,14 @@
 //! - <https://github.com/PeterGrace/vedirect_rs>
 
 mod bit_reader;
+mod bluetooth;
 mod err;
 mod model;
 mod record;
-mod bluetooth;
 
+pub use crate::err::*;
 #[cfg(feature = "bluetooth")]
 pub use bluetooth::open_stream;
-pub use crate::err::*;
 pub use model::*;
 use record::Record;
 

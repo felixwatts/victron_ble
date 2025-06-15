@@ -27,9 +27,7 @@ impl DeviceState {
             RECORD_TYPE_BATTERY_MONITOR => Ok(Self::BatteryMonitor(BatteryMonitorState::parse(
                 &record.decrypt()?,
             )?)),
-            RECORD_TYPE_INVERTER => Ok(Self::Inverter(InverterState::parse(
-                &record.decrypt()?,
-            )?)),
+            RECORD_TYPE_INVERTER => Ok(Self::Inverter(InverterState::parse(&record.decrypt()?)?)),
             _ => Err(Error::UnsupportedDeviceType(record.record_type())),
         }
     }
