@@ -56,7 +56,7 @@ Makes the `DeviceState` enum (de)serializable.
 An example application is provided which prints the state of a given device to to the terminal.
 
 ```
-cargo run --example example <Victron device name> <Victron device encryption key>
+cargo run --example bluetooth <Victron device name> <Victron device encryption key>
 ```
 
 ## Acknowledgements
