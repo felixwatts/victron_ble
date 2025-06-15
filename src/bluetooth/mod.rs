@@ -41,7 +41,6 @@ pub(crate) const VICTRON_MANUFACTURER_ID: u16 = 737;
 ///     }
 /// # }
 /// ```
-#[cfg(feature = "bluetooth")]
 pub fn open_stream(
     device_name: String,
     device_encryption_key: Vec<u8>,
@@ -55,7 +54,6 @@ pub fn open_stream(
     Ok(UnboundedReceiverStream::new(receiver))
 }
 
-#[cfg(feature = "bluetooth")]
 fn handle_manufacturer_data(
     manufacturer_data: &[u8],
     device_encryption_key: &[u8],
