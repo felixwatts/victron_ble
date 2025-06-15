@@ -1,5 +1,4 @@
 #![cfg(target_os = "macos")]
-#![cfg(feature = "bluetooth")]
 
 //! MacOS specific implementation
 
