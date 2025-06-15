@@ -10,7 +10,8 @@ pub enum Error {
     Bluetooth(bluest::Error),
     #[cfg(feature = "bluetooth")]
     #[cfg(target_os = "linux")]
-    Bluetooth(String),
+    #[error("An error occurred in the Linux bluetooth layer: {0}")]
+    Bluetooth(bluer::Error),
     #[error("No Bluetooth adapter found.")]
     BluetoothAdapterNotFound,
     #[error("The specified bluetooth device was not found.")]
@@ -55,7 +56,7 @@ impl From<bluest::Error> for Error {
 #[cfg(feature = "bluetooth")]
 impl From<bluer::Error> for Error {
     fn from(e: bluer::Error) -> Self {
-        Error::Bluer(e.to_string())
+        Error::Bluetooth(e)
     }
 }
 
