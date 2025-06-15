@@ -7,8 +7,6 @@ pub(crate) const RECORD_TYPE_SOLAR_CHARGER: u8 = 0x01;
 pub(crate) const RECORD_TYPE_BATTERY_MONITOR: u8 = 0x02;
 pub(crate) const RECORD_TYPE_INVERTER: u8 = 0x03;
 
-pub(crate) const VICTRON_MANUFACTURER_ID: u16 = 737;
-
 const MANUFACTURER_DATA_RECORD_TYPE: u8 = 0x10;
 
 type EncryptionAlgorithm = ctr::Ctr128LE<aes::Aes128>;
@@ -31,7 +29,7 @@ pub(crate) struct Record<'d, 'k> {
 /// 2-3   | ?     | Device model ID. (Not used in this crate.)
 /// 4     | ?     | Record type, such as SolarCharger or Inverter.
 /// 5-6   | ?     | The IV used in decryption in little endian form.
-/// 7     | ?     | The first byte of the decryption key. Used to validate the given decyption key.
+/// 7     | ?     | The first byte of the decryption key. Used to validate the given decryption key.
 /// 8..   | ?     | Payload encrypted using AES128 in CTR mode with the given IV.
 impl<'d, 'k> Record<'d, 'k> {
     pub(crate) fn new(data: &'d [u8], encryption_key: &'k [u8]) -> Result<Self> {
@@ -54,9 +52,9 @@ impl<'d, 'k> Record<'d, 'k> {
     pub(crate) fn decrypt(&self) -> Result<Vec<u8>> {
         let mut algo = EncryptionAlgorithm::new(self.encryption_key.into(), &self.iv().into());
 
-        let ciper = self.cipher();
-        let mut data = vec![0; ciper.len()];
-        algo.apply_keystream_b2b(&ciper, &mut data)?;
+        let cipher = self.cipher();
+        let mut data = vec![0; cipher.len()];
+        algo.apply_keystream_b2b(&cipher, &mut data)?;
 
         Ok(data)
     }

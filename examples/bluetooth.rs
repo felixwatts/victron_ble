@@ -1,3 +1,5 @@
+#![cfg(feature = "bluetooth")]
+
 use std::{env, println};
 use tokio_stream::StreamExt;
 
@@ -6,7 +8,7 @@ async fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() != 3 {
-        println!("Usage: cargo run --example example <victron device name> <victron device encryption key>");
+        println!("Usage: cargo run --example bluetooth <victron device name> <victron device encryption key>");
         return;
     }
 

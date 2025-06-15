@@ -34,8 +34,8 @@ pub(crate) async fn open_stream(
                     .unwrap_or("(unknown)".into());
                 if target_device_name == found_device_name {
                     if let Some(md) = device.adv_data.manufacturer_data {
-                        if md.company_id == crate::record::VICTRON_MANUFACTURER_ID {
-                            crate::handle_manufacturer_data(
+                        if md.company_id == super::VICTRON_MANUFACTURER_ID {
+                            super::handle_manufacturer_data(
                                 &md.data,
                                 &target_device_encryption_key,
                                 &mut sender,

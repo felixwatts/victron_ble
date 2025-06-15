@@ -39,16 +39,22 @@
 //!
 //! Using the app, connect to the device, then go to Settings -> Product Info -> Encryption data.
 //!
-//! ## Serialization
+//! ## Features
 //!
-//! If you add the `serde` feature then the `DeviceState` enum will be (de)serializable.
+//! ### `bluetooth`
+//!
+//! Adds the `open_stream` function which handles all of the bluetooth discovery and receiving but is only supported for the `macos` and `linux` targets. With the `bluetooth` feature off you still get the `parse_manufacturer_data` function but you must source your own manufacturer data packet. `bluetooth` is a default feature.
+//!
+//! ### `serde`
+//!
+//! Makes the `DeviceState` enum (de)serializable.
 //!
 //! ## Example
 //!
 //! An example application is provided which prints the state of a given device to to the terminal.
 //!
 //! ```shell
-//! cargo run --example example <Victron device name> <Victron device encryption key>
+//! cargo run --example bluetooth <Victron device name> <Victron device encryption key>
 //! ```
 //!
 //! ## Acknowledgements
@@ -60,23 +66,15 @@
 //! - <https://github.com/PeterGrace/vedirect_rs>
 
 mod bit_reader;
+mod bluetooth;
 mod err;
-mod linux;
-mod macos;
 mod model;
 mod record;
 
 pub use crate::err::*;
+#[cfg(feature = "bluetooth")]
+pub use bluetooth::open_stream;
 pub use model::*;
-
-use tokio::sync::mpsc::UnboundedSender;
-use tokio_stream::{wrappers::UnboundedReceiverStream, Stream};
-
-#[cfg(target_os = "linux")]
-use linux::open_stream as _open_stream;
-#[cfg(target_os = "macos")]
-use macos::open_stream as _open_stream;
-
 use record::Record;
 
 /// Decrypt and parse the content of the manufacturer data published by a Victron device.
@@ -86,69 +84,4 @@ pub fn parse_manufacturer_data(
 ) -> Result<DeviceState> {
     let record = Record::new(manufacturer_data, device_encryption_key)?;
     DeviceState::parse(&record)
-}
-
-/// Continuously monitor device state.
-///
-/// Will attempt to discover the named device, then continuously listen for device state
-/// bluetooth broadcasts which will each be decrypted, parsed and sent to the user
-/// via a stream.
-///
-/// # Example
-///
-///  ```rust
-/// # use std::{println, time::Duration};
-/// # use tokio_stream::StreamExt;
-/// #
-/// # #[tokio::main]
-/// # async fn main() {
-///     let device_name = "Victron Bluetooth device name".into();
-///     let device_encryption_key = hex::decode("00").unwrap();
-///
-///     let mut device_state_stream = victron_ble::open_stream(
-///         device_name,
-///         device_encryption_key
-///     ).unwrap();
-///
-///     while let Some(result) = device_state_stream.next().await {
-///         println!("{result:?}");
-///     }
-/// # }
-/// ```
-pub fn open_stream(
-    device_name: String,
-    device_encryption_key: Vec<u8>,
-) -> Result<impl Stream<Item = Result<DeviceState>>> {
-    let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
-
-    tokio::spawn(async move {
-        let _ = _open_stream(device_name, device_encryption_key, sender.clone()).await;
-    });
-
-    Ok(UnboundedReceiverStream::new(receiver))
-}
-
-fn handle_manufacturer_data(
-    manufacturer_data: &[u8],
-    device_encryption_key: &[u8],
-    sender: &mut UnboundedSender<Result<DeviceState>>,
-) -> Result<()> {
-    let device_state_result = parse_manufacturer_data(manufacturer_data, device_encryption_key);
-
-    match device_state_result {
-        Err(Error::WrongAdvertisement) => Ok(()), // Message irrelevant to user, wait for next advertisement
-        Err(e) => {
-            // Report error to user
-            let _ = sender.send(Err(e.clone()));
-            // Fatal error, stop
-            Err(e)
-        }
-        Ok(device_state) => {
-            if sender.send(Ok(device_state)).is_err() {
-                // If consumer has dropped the channel then stop
-                return Err(Error::ClientClosedChannel);
-            }
-            Ok(())
-        }
-    }
 }

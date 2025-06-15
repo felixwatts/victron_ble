@@ -41,16 +41,22 @@ Currently the following device types are supported.
 - Battery Monitor
 - Inverter
 
-## Serialization
+## Features
 
-If you add the `serde` feature then the `DeviceState` enum will be (de)serializable.
+### `bluetooth`
+
+Adds the `open_stream` function which handles all of the bluetooth discovery and receiving but is only supported for the `macos` and `linux` targets. With the `bluetooth` feature off you still get the `parse_manufacturer_data` function but you must source your own manufacturer data packet. `bluetooth` is a default feature.
+
+### `serde`
+
+Makes the `DeviceState` enum (de)serializable.
 
 ## Example
 
 An example application is provided which prints the state of a given device to to the terminal.
 
 ```
-cargo run --example example <Victron device name> <Victron device encryption key>
+cargo run --example bluetooth <Victron device name> <Victron device encryption key>
 ```
 
 ## Acknowledgements
