@@ -1,5 +1,6 @@
 # NEXT breaking
 
+- Chg: put all bluetooth functionality behind a new 'bluetooth' feature.
 - Fix: make `TestRecordState` public.
 - Fix: rename `DeviceState::InverterState` to `DeviceState::Inverter`
 
