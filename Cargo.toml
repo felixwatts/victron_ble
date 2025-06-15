@@ -22,14 +22,16 @@ tokio-stream = { version = "0.1.17" }
 bitflags = "2.9.1"
 
 [target.'cfg(target_os = "linux")'.dependencies]
-bluer = { version = "0.17.3", features=["bluetoothd"] }
+bluer = { version = "0.17.3", features=["bluetoothd"], optional = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]
-bluest = { version = "0.6.8" }
+bluest = { version = "0.6.8", optional = true }
 
 [dev-dependencies]
 hex = "0.4"
 tokio = { version =  "1.40.0", features=["full"] }
 
 [features]
+default = ["bluetooth"]
 serde = ["dep:serde", "bitflags/serde"]
+bluetooth = ["dep:bluer", "dep:bluest"]

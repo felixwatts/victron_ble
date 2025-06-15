@@ -1,3 +1,5 @@
+#![cfg(feature = "bluetooth")]
+
 use std::{env, println};
 use tokio_stream::StreamExt;
 

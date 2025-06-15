@@ -1,4 +1,5 @@
 #![cfg(target_os = "linux")]
+#![cfg(feature = "bluetooth")]
 
 //! Linux specific implementation
 
