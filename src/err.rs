@@ -2,20 +2,26 @@ use aes::cipher::StreamCipherError;
 use num_enum::TryFromPrimitiveError;
 use thiserror::Error;
 
-#[derive(Error, Debug, Clone)]
+#[derive(Error, Debug)]
 pub enum Error {
+    #[cfg(feature = "bluetooth")]
+    #[cfg(target_os = "macos")]
     #[error("An error occurred in the MacOS bluetooth layer: {0}")]
-    Bluest(String),
+    Bluetooth(bluest::Error),
+    #[cfg(feature = "bluetooth")]
+    #[cfg(target_os = "linux")]
     #[error("An error occurred in the Linux bluetooth layer: {0}")]
-    Bluer(String),
+    Bluetooth(bluer::Error),
+    #[error("No Bluetooth adapter found.")]
+    BluetoothAdapterNotFound,
     #[error("The specified bluetooth device was not found.")]
     BluetoothDeviceNotFound,
     #[error("There was an error while receiving advertising events from the device.")]
     DeviceEventsChannelError,
     #[error("The data does not represent a Victron Manufacturer Data record. Victron devices emit multiple types of advertisement data so keep listening.")]
     WrongAdvertisement,
-    #[error("The data could not be parsed: {0}")]
-    InvalidData(String),
+    #[error("The data could not be decrypted: {0}")]
+    DecryptionFailed(StreamCipherError),
     #[error("Incorrect device encryption key. The Device encryption key provided is not correct for this device.")]
     IncorrectDeviceEncryptionKey,
     #[error(
@@ -26,13 +32,23 @@ pub enum Error {
     UnsupportedDeviceType(u8),
     #[error("Channel closed by client")]
     ClientClosedChannel,
+    #[error("Invalid mode: {0}")]
+    InvalidMode(TryFromPrimitiveError<crate::model::Mode>),
+    #[error("Invalid error state: {0}")]
+    InvalidErrorState(TryFromPrimitiveError<crate::model::ErrorState>),
+    #[error("Invalid alarm reason")]
+    InvalidAlarmReason,
+    #[error("Invalid aux input type: {0}")]
+    InvalidAuxInputType(u64),
+    #[error("The data was shorter than expected.")]
+    DataTooShort,
 }
 
 #[cfg(target_os = "macos")]
 #[cfg(feature = "bluetooth")]
 impl From<bluest::Error> for Error {
     fn from(e: bluest::Error) -> Self {
-        Error::Bluest(e.to_string())
+        Error::Bluetooth(e)
     }
 }
 
@@ -40,20 +56,26 @@ impl From<bluest::Error> for Error {
 #[cfg(feature = "bluetooth")]
 impl From<bluer::Error> for Error {
     fn from(e: bluer::Error) -> Self {
-        Error::Bluer(e.to_string())
+        Error::Bluetooth(e)
     }
 }
 
 impl From<StreamCipherError> for Error {
     fn from(e: StreamCipherError) -> Self {
-        Error::InvalidData(format!("The data could not be decrypted: {e}"))
+        Error::DecryptionFailed(e)
     }
 }
 
-impl<T: num_enum::TryFromPrimitive> From<TryFromPrimitiveError<T>> for Error {
-    fn from(e: TryFromPrimitiveError<T>) -> Self {
-        Error::InvalidData(format!("Unexpected value: {e}"))
+impl From<TryFromPrimitiveError<crate::model::Mode>> for Error {
+    fn from(e: TryFromPrimitiveError<crate::model::Mode>) -> Self {
+        Error::InvalidMode(e)
     }
 }
 
-pub type Result<T> = std::result::Result<T, Error>;
+impl From<TryFromPrimitiveError<crate::model::ErrorState>> for Error {
+    fn from(e: TryFromPrimitiveError<crate::model::ErrorState>) -> Self {
+        Error::InvalidErrorState(e)
+    }
+}
+
+pub type Result<T> = core::result::Result<T, Error>;

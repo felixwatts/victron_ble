@@ -49,11 +49,11 @@ impl<'d, 'k> Record<'d, 'k> {
         Ok(record)
     }
 
-    pub(crate) fn decrypt(&self) -> Result<Vec<u8>> {
+    pub(crate) fn decrypt(&self) -> Result<[u8; 16]> {
         let mut algo = EncryptionAlgorithm::new(self.encryption_key.into(), &self.iv().into());
 
         let cipher = self.cipher();
-        let mut data = vec![0; cipher.len()];
+        let mut data = [0; 16];
         algo.apply_keystream_b2b(&cipher, &mut data)?;
 
         Ok(data)
@@ -92,14 +92,63 @@ impl<'d, 'k> Record<'d, 'k> {
         self.data[7] == self.encryption_key[0]
     }
 
-    fn cipher(&self) -> Vec<u8> {
-        assert!(self.data[8..].len() <= 16);
+    fn cipher(&self) -> [u8; 16] {
+        let data = &self.data[8..];
+        let data_len = data.len();
+        assert!(data_len <= 16);
 
-        let mut padded = Vec::with_capacity(16);
-        padded.extend_from_slice(&self.data[8..]);
-        let pad_value = 16 - padded.len() as u8;
-        padded.resize(16, pad_value);
+        let mut padded = [0u8; 16];
+        padded[..data_len].copy_from_slice(data);
+        let pad_value = 16 - data_len as u8;
+        padded[data_len..].fill(pad_value);
 
         padded
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_decrypt() {
+        let plaintext = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+        let key = [
+            17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+        ];
+        let iv = [33, 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let mut algo = EncryptionAlgorithm::new(key.as_slice().into(), &iv.into());
+        let mut cipher = [0; 16];
+        algo.apply_keystream_b2b(&plaintext, &mut cipher).unwrap();
+
+        let manufacturer_data = [
+            MANUFACTURER_DATA_RECORD_TYPE,
+            0x00,
+            0x00,
+            0x00,
+            RECORD_TYPE_TEST_RECORD,
+            iv[0],
+            iv[1],
+            key[0],
+            cipher[0],
+            cipher[1],
+            cipher[2],
+            cipher[3],
+            cipher[4],
+            cipher[5],
+            cipher[6],
+            cipher[7],
+            cipher[8],
+            cipher[9],
+            cipher[10],
+            cipher[11],
+            cipher[12],
+            cipher[13],
+            cipher[14],
+            cipher[15],
+        ];
+        let record = Record::new(&manufacturer_data, &key).unwrap();
+        let decrypted = record.decrypt().unwrap();
+        assert_eq!(decrypted, plaintext);
     }
 }

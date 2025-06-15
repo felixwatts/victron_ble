@@ -13,14 +13,13 @@ pub(crate) async fn open_stream(
 ) -> Result<()> {
     let adapter = bluest::Adapter::default()
         .await
-        .ok_or(Error::Bluest("Default adapter not found".into()))?;
+        .ok_or(Error::BluetoothAdapterNotFound)?;
     adapter.wait_available().await?;
     let adapter_events_result = adapter.scan(&[]).await;
     let mut adapter_events = match adapter_events_result {
         Ok(adapter_events) => adapter_events,
         Err(e) => {
             let e: crate::Error = e.into();
-            let _ = sender.send(Err(e.clone()));
             return Err(e);
         }
     };

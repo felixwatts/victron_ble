@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "bluetooth"), no_std)]
+
 //! # Victron BLE
 //!
 //! Read data from Victron devices over Bluetooth Low Energy.
@@ -48,6 +50,10 @@
 //! ### `serde`
 //!
 //! Makes the `DeviceState` enum (de)serializable.
+//!
+//! ## no_std
+//!
+//! If you turn the `bluetooth` feature off then the crate can be compiled in a `no_std` context.
 //!
 //! ## Example
 //!

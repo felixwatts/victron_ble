@@ -35,7 +35,7 @@ pub(crate) async fn open_stream(
                         device_event
                     {
                         if let Some(md) = &md.get(&super::VICTRON_MANUFACTURER_ID) {
-                            crate::handle_manufacturer_data(
+                            super::handle_manufacturer_data(
                                 md,
                                 &target_device_encryption_key,
                                 &mut sender,

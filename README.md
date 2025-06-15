@@ -51,6 +51,10 @@ Adds the `open_stream` function which handles all of the bluetooth discovery and
 
 Makes the `DeviceState` enum (de)serializable.
 
+## no_std
+
+If you turn the `bluetooth` feature off then the crate can be compiled in a `no_std` context.
+
 ## Example
 
 An example application is provided which prints the state of a given device to to the terminal.

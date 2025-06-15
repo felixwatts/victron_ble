@@ -19,8 +19,8 @@ impl InverterState {
         let mut reader = BitReader::new(payload);
 
         let mode = Mode::try_from(reader.read_unsigned_int(8)?)?;
-        let alarm_reason = AlarmReason::from_bits(reader.read_signed_int(16)?)
-            .ok_or(Error::InvalidData("Unknown alarm reason.".into()))?;
+        let alarm_reason =
+            AlarmReason::from_bits(reader.read_signed_int(16)?).ok_or(Error::InvalidAlarmReason)?;
         let battery_voltage_v = reader.read_signed_int(16)? as f32 / 100.0;
         let ac_apparent_power_va = reader.read_unsigned_int(16)? as f32;
         let ac_voltage_v = reader.read_unsigned_int(15)? as f32 / 100.0;
