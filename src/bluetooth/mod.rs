@@ -48,7 +48,9 @@ pub fn open_stream(
     let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
 
     tokio::spawn(async move {
-        let _ = _open_stream(device_name, device_encryption_key, sender.clone()).await;
+        if let Err(e) = _open_stream(device_name, device_encryption_key, sender.clone()).await {
+            let _ = sender.send(Err(e));
+        }
     });
 
     Ok(UnboundedReceiverStream::new(receiver))
@@ -65,8 +67,6 @@ fn handle_manufacturer_data(
     match device_state_result {
         Err(Error::WrongAdvertisement) => Ok(()), // Message irrelevant to user, wait for next advertisement
         Err(e) => {
-            // Report error to user
-            let _ = sender.send(Err(e.clone()));
             // Fatal error, stop
             Err(e)
         }

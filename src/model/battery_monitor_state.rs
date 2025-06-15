@@ -30,7 +30,7 @@ impl BatteryMonitorState {
         let time_to_go_mins = reader.read_unsigned_int(16)? as f32;
         let battery_voltage_v = reader.read_signed_int(16)? as f32 / 100.0;
         let alarm_reason = AlarmReason::from_bits(reader.read_signed_int(16)?)
-            .ok_or(Error::InvalidData("Unknown alarm reason.".into()))?;
+            .ok_or(Error::InvalidAlarmReason)?;
 
         // we need to read the next two fields out of order because
         // the format of the former depends on the latter.
@@ -51,7 +51,7 @@ impl BatteryMonitorState {
                 AuxInput::TemperatureK(temperature)
             }
             3 => AuxInput::None,
-            _ => return Err(Error::InvalidData("Unknown Aux input type.".into())),
+            t => return Err(Error::InvalidAuxInputType(t)),
         };
 
         let battery_current_a = reader.read_signed_int(22)? as f32 / 1000.0;

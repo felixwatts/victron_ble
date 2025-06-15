@@ -10,16 +10,16 @@ keywords = ["Victron", "BLE", "bluetooth"]
 exclude = ["extra-manufacturer-data-2022-12-14.pdf"]
 
 [dependencies]
-aes = "0.8.4"
-ctr = "0.9.2"
-thiserror = "2.0.12"
-num_enum = "0.7.3"
-strum = { version = "0.27.1", features = ["derive"] }
-block-padding = "0.3.3"
+aes = { version = "0.8.4", default-features = false }
+ctr = { version = "0.9.2", default-features = false }
+thiserror = { version = "2.0.12", default-features = false }
+num_enum = { version = "0.7.3", default-features = false }
+strum = { version = "0.27.1", default-features = false, features = ["derive"] }
+block-padding = { version = "0.3.3", default-features = false }
 serde = { version = "1.0.219", optional = true, features = ["derive"]}
-tokio = { version =  "1.45.1", features=["sync", "rt"] }
-tokio-stream = { version = "0.1.17" }
-bitflags = "2.9.1"
+bitflags = { version = "2.9.1", default-features = false }
+tokio = { version =  "1.40.0", features = ["rt", "rt-multi-thread", "macros"], optional = true }
+tokio-stream = { version = "0.1.17", optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 bluer = { version = "0.17.3", features=["bluetoothd"], optional = true }
@@ -29,9 +29,8 @@ bluest = { version = "0.6.8", optional = true }
 
 [dev-dependencies]
 hex = "0.4"
-tokio = { version =  "1.40.0", features=["full"] }
 
 [features]
 default = ["bluetooth"]
 serde = ["dep:serde", "bitflags/serde"]
-bluetooth = ["dep:bluer", "dep:bluest"]
+bluetooth = ["dep:bluer", "dep:bluest", "dep:tokio", "dep:tokio-stream"]

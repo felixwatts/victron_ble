@@ -49,11 +49,11 @@ impl<'d, 'k> Record<'d, 'k> {
         Ok(record)
     }
 
-    pub(crate) fn decrypt(&self) -> Result<Vec<u8>> {
+    pub(crate) fn decrypt(&self) -> Result<[u8; 16]> {
         let mut algo = EncryptionAlgorithm::new(self.encryption_key.into(), &self.iv().into());
 
         let cipher = self.cipher();
-        let mut data = vec![0; cipher.len()];
+        let mut data = [0; 16];
         algo.apply_keystream_b2b(&cipher, &mut data)?;
 
         Ok(data)
@@ -92,13 +92,15 @@ impl<'d, 'k> Record<'d, 'k> {
         self.data[7] == self.encryption_key[0]
     }
 
-    fn cipher(&self) -> Vec<u8> {
-        assert!(self.data[8..].len() <= 16);
+    fn cipher(&self) -> [u8; 16] {
+        let data = &self.data[8..];
+        let data_len = data.len();
+        assert!(data_len <= 16);
 
-        let mut padded = Vec::with_capacity(16);
-        padded.extend_from_slice(&self.data[8..]);
-        let pad_value = 16 - padded.len() as u8;
-        padded.resize(16, pad_value);
+        let mut padded = [0u8; 16];
+        padded[..data_len].copy_from_slice(data);
+        let pad_value = 16 - data_len as u8;
+        padded[data_len..].fill(pad_value);
 
         padded
     }

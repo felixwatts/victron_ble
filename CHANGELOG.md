@@ -1,5 +1,6 @@
 # 0.4.0
 
+- Chg: crate is no_std when bluetooth feature is off.
 - Chg: put all bluetooth functionality behind a new 'bluetooth' feature.
 - Fix: make `TestRecordState` public.
 - Fix: rename `DeviceState::InverterState` to `DeviceState::Inverter`

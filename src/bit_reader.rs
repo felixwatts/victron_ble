@@ -44,9 +44,7 @@ impl<'a> BitReader<'a> {
 
     fn read_bit(&mut self) -> Result<bool> {
         if self.cursor == self.data.len() * 8 {
-            return Err(Error::InvalidData(
-                "The data was shorter than expected.".into(),
-            ));
+            return Err(Error::DataTooShort);
         }
 
         let byte = self.cursor / 8;
