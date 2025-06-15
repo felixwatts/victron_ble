@@ -30,7 +30,6 @@ pub enum Error {
 
 #[cfg(target_os = "macos")]
 #[cfg(feature = "bluetooth")]
-
 impl From<bluest::Error> for Error {
     fn from(e: bluest::Error) -> Self {
         Error::Bluest(e.to_string())
