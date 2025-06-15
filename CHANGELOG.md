@@ -1,4 +1,4 @@
-# NEXT breaking
+# 0.4.0
 
 - Chg: put all bluetooth functionality behind a new 'bluetooth' feature.
 - Fix: make `TestRecordState` public.
