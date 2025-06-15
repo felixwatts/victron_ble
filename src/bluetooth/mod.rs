@@ -12,6 +12,8 @@ use linux::open_stream as _open_stream;
 #[cfg(target_os = "macos")]
 use macos::open_stream as _open_stream;
 
+pub(crate) const VICTRON_MANUFACTURER_ID: u16 = 737;
+
 /// Continuously monitor device state.
 ///
 /// Will attempt to discover the named device, then continuously listen for device state

@@ -2,6 +2,7 @@
     "cSpell.words": [
         "bitflags",
         "bluetoothd",
+        "keystream",
         "println",
         "repr",
         "serde",
