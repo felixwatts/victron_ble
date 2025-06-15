@@ -1,4 +1,5 @@
 #![cfg_attr(not(feature = "bluetooth"), no_std)]
+#![feature(ascii_char)]
 
 //! # Victron BLE
 //!
