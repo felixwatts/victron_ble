@@ -32,6 +32,11 @@
 //!     }
 //! # }
 //! ```
+//! 
+//! ## Device Setup
+//! 
+//! In order to turn on the Victron device's BLE state broadcasts you must enable the "Instant Readout"
+//! setting. This can be done via the Victron Connect App on iOS or Android.
 //!
 //! ## Encryption Key
 //!
@@ -45,7 +50,12 @@
 //!
 //! ### `bluetooth`
 //!
-//! Adds the `open_stream` function which handles all of the bluetooth discovery and receiving but is only supported for the `macos` and `linux` targets. With the `bluetooth` feature off you still get the `parse_manufacturer_data` function but you must source your own manufacturer data packet. `bluetooth` is a default feature.
+//! Adds the `open_stream` function which handles all of the bluetooth discovery and receiving 
+//! but is only supported for the `macos` and `linux` targets. With the `bluetooth` feature off 
+//! you still get the `parse_manufacturer_data` function but you must source your own 
+//! manufacturer data packet. 
+//! 
+//! `bluetooth` is a default feature.
 //!
 //! ### `serde`
 //!

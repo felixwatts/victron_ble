@@ -23,6 +23,11 @@ while let Some(result) = device_state_stream.next().await {
 }
 ```
 
+## Device Setup
+
+In order to turn on the Victron device's BLE state broadcasts you must enable the "Instant Readout"
+setting. This can be done via the Victron Connect App on iOS or Android.
+
 ## Encryption Key
 
 The device status messages published by the Victron device are encrypted. In order
