@@ -6,8 +6,6 @@
 //!
 //! Some Victron devices broadcast some aspects of their state over Bluetooth on a regular basis. This crate makes it easy to access that data.
 //!
-//! Currently only Solar Charger type devices are supported but support can be added for other device types if requested.
-//!
 //! ## Basic Usage
 //!
 //! Use the `open_stream` function to get a stream of state updates for a given
@@ -45,6 +43,14 @@
 //! device using the Victron Connect app on iOS or Android.
 //!
 //! Using the app, connect to the device, then go to Settings -> Product Info -> Encryption data.
+//! 
+//! ## Supported Device Types
+//! 
+//! Currently the following device types are supported. Support can be added for other device types if requested.
+//! 
+//! - Solar Charger
+//! - Battery Monitor
+//! - Inverter
 //!
 //! ## Features
 //!
