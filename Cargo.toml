@@ -7,7 +7,7 @@ description = "Read data from Victron devices over Bluetooth Low Energy."
 license = "MIT"
 readme = "README.md"
 keywords = ["Victron", "BLE", "bluetooth"]
-exclude = ["extra-manufacturer-data-2022-12-14.pdf"]
+exclude = ["docs"]
 
 [dependencies]
 aes = { version = "0.8.4", default-features = false }
@@ -22,7 +22,7 @@ tokio = { version =  "1.40.0", features = ["rt", "rt-multi-thread", "macros"], o
 tokio-stream = { version = "0.1.17", optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-bluer = { version = "0.17.3", features=["bluetoothd"], optional = true }
+bluer = { version = "0.17.4", features=["bluetoothd"], optional = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 bluest = { version = "0.6.8", optional = true }
