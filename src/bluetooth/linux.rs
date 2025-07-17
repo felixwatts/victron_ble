@@ -18,19 +18,15 @@ pub(crate) async fn open_stream(
 
     let mut adapter_events = adapter.discover_devices().await?;
 
-    loop {
-        let ev = adapter_events.next().await;
-        if let Some(bluer::AdapterEvent::DeviceAdded(device_addr)) = ev {
+    while let Some(ev) = adapter_events.next().await {
+        if let bluer::AdapterEvent::DeviceAdded(device_addr) = ev {
             let device = adapter.device(device_addr)?;
             let device_name = device.name().await?.unwrap_or("(unknown)".to_string());
+
             if device_name == target_device_name {
                 let mut device_events = device.events().await?;
 
-                loop {
-                    let device_event = device_events
-                        .next()
-                        .await
-                        .ok_or(Error::DeviceEventsChannelError)?;
+                while let Some(device_event) = device_events.next().await {
                     if let DeviceEvent::PropertyChanged(DeviceProperty::ManufacturerData(md)) =
                         device_event
                     {
@@ -43,7 +39,11 @@ pub(crate) async fn open_stream(
                         }
                     }
                 }
+
+                return Err(Error::DeviceEventsChannelError);
             }
         }
     }
+
+    Ok(())
 }
