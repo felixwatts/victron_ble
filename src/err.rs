@@ -16,8 +16,8 @@ pub enum Error {
     BluetoothAdapterNotFound,
     #[error("The specified bluetooth device was not found.")]
     BluetoothDeviceNotFound,
-    #[error("There was an error while receiving advertising events from the device.")]
-    DeviceEventsChannelError,
+    #[error("The bluetooth device event stream ended.")]
+    BluetoothEventStreamClosed,
     #[error("The data does not represent a Victron Manufacturer Data record. Victron devices emit multiple types of advertisement data so keep listening.")]
     WrongAdvertisement,
     #[error("The data could not be decrypted: {0}")]

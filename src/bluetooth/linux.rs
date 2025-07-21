@@ -40,10 +40,10 @@ pub(crate) async fn open_stream(
                     }
                 }
 
-                return Err(Error::DeviceEventsChannelError);
+                return Err(Error::BluetoothEventStreamClosed);
             }
         }
     }
 
-    Ok(())
+    Err(Error::BluetoothEventStreamClosed)
 }
