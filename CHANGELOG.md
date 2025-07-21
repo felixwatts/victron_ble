@@ -1,3 +1,7 @@
+# 0.4.1
+
+- Fix: `open_stream` hangs at 100% CPU if the bluetooth adapter is disconnected.
+
 # 0.4.0
 
 - Chg: crate is no_std when bluetooth feature is off.

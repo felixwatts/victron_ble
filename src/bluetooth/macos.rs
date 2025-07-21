@@ -23,31 +23,25 @@ pub(crate) async fn open_stream(
             return Err(e);
         }
     };
-    loop {
-        match adapter_events.next().await {
-            Some(device) => {
-                let found_device_name = device
-                    .device
-                    .name_async()
-                    .await
-                    .unwrap_or("(unknown)".into());
-                if target_device_name == found_device_name {
-                    if let Some(md) = device.adv_data.manufacturer_data {
-                        if md.company_id == super::VICTRON_MANUFACTURER_ID {
-                            super::handle_manufacturer_data(
-                                &md.data,
-                                &target_device_encryption_key,
-                                &mut sender,
-                            )?;
-                        }
-                    }
+
+    while let Some(device) = adapter_events.next().await {
+        let found_device_name = device
+            .device
+            .name_async()
+            .await
+            .unwrap_or("(unknown)".into());
+        if target_device_name == found_device_name {
+            if let Some(md) = device.adv_data.manufacturer_data {
+                if md.company_id == super::VICTRON_MANUFACTURER_ID {
+                    super::handle_manufacturer_data(
+                        &md.data,
+                        &target_device_encryption_key,
+                        &mut sender,
+                    )?;
                 }
-            }
-            None => {
-                // Adapter events stream has ended, stop
-                let _ = sender.send(Err(Error::BluetoothDeviceNotFound));
-                return Err(Error::BluetoothDeviceNotFound);
             }
         }
     }
+
+    Err(Error::BluetoothEventStreamClosed)
 }
