@@ -5,6 +5,7 @@ use super::battery_monitor_state::BatteryMonitorState;
 use super::inverter_state::InverterState;
 use super::solar_charger_state::SolarChargerState;
 use super::test_record_state::TestRecordState;
+use super::ve_bus_state::VeBusState;
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -13,6 +14,7 @@ pub enum DeviceState {
     SolarCharger(SolarChargerState),
     BatteryMonitor(BatteryMonitorState),
     Inverter(InverterState),
+    VeBus(VeBusState),
 }
 
 impl DeviceState {
@@ -28,6 +30,7 @@ impl DeviceState {
                 &record.decrypt()?,
             )?)),
             RECORD_TYPE_INVERTER => Ok(Self::Inverter(InverterState::parse(&record.decrypt()?)?)),
+            RECORD_TYPE_VE_BUS => Ok(Self::VeBus(VeBusState::parse(&record.decrypt()?)?)),
             _ => Err(Error::UnsupportedDeviceType(record.record_type())),
         }
     }

@@ -42,6 +42,10 @@ pub enum Error {
     InvalidAuxInputType(u64),
     #[error("The data was shorter than expected.")]
     DataTooShort,
+    #[error("Invalid ac in state")]
+    InvalidAcInState,
+    #[error("Invalid alarm notification")]
+    InvalidAlarmNotification,
 }
 
 #[cfg(target_os = "macos")]

@@ -1,3 +1,8 @@
+# 0.5.0
+
+Add: support for VE.Bus device type.
+Add: `AcInState` and `AlarmNotification` enums for VE.Bus specific states.
+
 # 0.4.1
 
 - Fix: `open_stream` hangs at 100% CPU if the bluetooth adapter is disconnected.
