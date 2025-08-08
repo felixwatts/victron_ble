@@ -45,6 +45,7 @@ Currently the following device types are supported.
 - Solar Charger
 - Battery Monitor
 - Inverter
+- VE Bus
 
 ## Features
 

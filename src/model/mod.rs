@@ -6,6 +6,7 @@ mod inverter_state;
 mod mode;
 mod solar_charger_state;
 mod test_record_state;
+mod ve_bus_state;
 
 pub use alarm_reason::AlarmReason;
 pub use battery_monitor_state::BatteryMonitorState;
@@ -15,3 +16,4 @@ pub use inverter_state::InverterState;
 pub use mode::Mode;
 pub use solar_charger_state::SolarChargerState;
 pub use test_record_state::TestRecordState;
+pub use ve_bus_state::VeBusState;
