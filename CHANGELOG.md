@@ -1,7 +1,7 @@
 # 0.5.0
 
-Add: support for VE.Bus device type.
-Add: `AcInState` and `AlarmNotification` enums for VE.Bus specific states.
+- Add: support for VE.Bus device type.
+- Add: `AcInState` and `AlarmNotification` enums for VE.Bus specific states.
 
 # 0.4.1
 
