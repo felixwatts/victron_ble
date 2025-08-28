@@ -10,17 +10,23 @@ Use the `open_stream` function to get a stream of state updates for a given
 Victron device:
 
 ```rust
-let device_name = "Victron Bluetooth device name";
-let device_encryption_key = hex::decode("Victron device encryption key").unwrap();
+# use std::{println, time::Duration};
+# use tokio_stream::StreamExt;
+#
+# #[tokio::main]
+# async fn main() {
+    let device_name = "Victron Bluetooth device name".into();
+    let device_encryption_key = hex::decode("00"/* Victron device encryption key. See below. */).unwrap();
 
-let mut device_state_stream = victron_ble::open_stream(
-    device_name, 
-    device_encryption_key
-).unwrap();
+    let mut device_state_stream = victron_ble::open_stream(
+        device_name,
+        device_encryption_key
+    ).unwrap();
 
-while let Some(result) = device_state_stream.next().await {
-    println!("{result:?}");
-}
+    while let Some(result) = device_state_stream.next().await {
+        println!("{result:?}");
+    }
+# }
 ```
 
 ## Device Setup
@@ -63,7 +69,7 @@ If you turn the `bluetooth` feature off then the crate can be compiled in a `no_
 
 An example application is provided which prints the state of a given device to to the terminal.
 
-```
+```bash
 cargo run --example bluetooth <Victron device name> <Victron device encryption key>
 ```
 
