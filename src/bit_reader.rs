@@ -7,7 +7,7 @@ pub(crate) struct BitReader<'a> {
 }
 
 /// The Victron BLE data uses a packed binary format in which numbers can be
-/// represented by artitrary numbers of bits.
+/// represented by arbitrary numbers of bits.
 ///
 /// This struct provides methods for reading numbers from data in the packed
 /// format.
