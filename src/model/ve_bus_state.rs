@@ -78,7 +78,7 @@ mod test {
     use super::*;
 
     // Raw: [05, 00, 16, 00, 46, 05, 2f, 00, 00, 00, 00, c2, ff, c1, 16, 11]
-    // Expected values from your app:
+    // Expected values (from example app):
     // - Mode: Float (5)
     // - Battery: 13.49V, 2.2A
     // - AC Output: 2W

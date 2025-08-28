@@ -38,9 +38,7 @@ Using the app, connect to the device, then go to Settings -> Product Info -> Enc
 
 ## Supported Device Types
 
-Currently the following device types are supported.
-
-> Support can be added for other device types if requested.
+Currently the following device types are supported. **Support can be added for other device types if requested.**
 
 - Solar Charger
 - Battery Monitor

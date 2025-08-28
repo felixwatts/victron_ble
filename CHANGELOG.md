@@ -1,3 +1,7 @@
+# 0.5.1
+
+- Chg: make `AcInState` and `AlarmNotification` public.
+
 # 0.5.0
 
 - Add: support for VE.Bus device type.
