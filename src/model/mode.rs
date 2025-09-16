@@ -5,6 +5,7 @@ use strum::Display;
 #[derive(Debug, Eq, PartialEq, TryFromPrimitive, Copy, Clone, Ord, PartialOrd, Hash, Display)]
 #[repr(u64)]
 pub enum Mode {
+    NotApplicable = 0xFF,
     Off = 0,
     LowPower = 1,
     Fault = 2,

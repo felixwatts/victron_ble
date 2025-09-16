@@ -1,14 +1,14 @@
+use super::error_state::ErrorState;
+use super::mode::Mode;
 use crate::bit_reader::BitReader;
 use crate::err::*;
 use num_enum::TryFromPrimitive;
-
-use super::mode::Mode;
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 pub struct VeBusState {
     pub mode: Mode,
-    pub error: u8,
+    pub error: ErrorState,
     pub battery_voltage_v: f32,
     pub battery_current_a: f32,
     pub ac_in_state: AcInState,
@@ -44,7 +44,7 @@ impl VeBusState {
         let mut reader = BitReader::new(payload);
 
         let mode = Mode::try_from(reader.read_unsigned_int(8)?)?;
-        let error = reader.read_unsigned_int(8)? as u8;
+        let error = ErrorState::try_from(reader.read_unsigned_int(8)?)?;
         let battery_current_a = (reader.read_signed_int(16)? as f32) / 10.0;
         let battery_voltage_v = (reader.read_unsigned_int(14)? as f32) / 100.0;
         let ac_in_state = AcInState::try_from(reader.read_unsigned_int(2)? as u8)
@@ -80,6 +80,7 @@ mod test {
     // Raw: [05, 00, 16, 00, 46, 05, 2f, 00, 00, 00, 00, c2, ff, c1, 16, 11]
     // Expected values (from example app):
     // - Mode: Float (5)
+    // - Error: No Error
     // - Battery: 13.49V, 2.2A
     // - AC Output: 2W
     // - Temperature: 26°C
@@ -93,7 +94,7 @@ mod test {
         let result = VeBusState::parse(&test_data).unwrap();
 
         assert_eq!(result.mode, Mode::Float);
-        assert_eq!(result.error, 0);
+        assert_eq!(result.error, ErrorState::NoError);
 
         assert!((result.battery_voltage_v - 13.50).abs() < 0.1);
 

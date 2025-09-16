@@ -5,6 +5,7 @@ use strum::Display;
 #[derive(Debug, Eq, PartialEq, TryFromPrimitive, Copy, Clone, Ord, PartialOrd, Hash, Display)]
 #[repr(u64)]
 pub enum ErrorState {
+    NotApplicable = 0xFF,
     NoError = 0,
     BatteryVoltsTooHigh = 2,
     ChargerTemperatureTooHigh = 17,
