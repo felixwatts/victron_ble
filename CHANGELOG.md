@@ -1,3 +1,8 @@
+# 0.6.0
+
+- Chg: change type of `VeBusState.error` to `ErrorState`.
+- Fix: correctly handle N/A values for `ErrorState` and `Mode`.
+
 # 0.5.1
 
 - Chg: make `AcInState` and `AlarmNotification` public.

@@ -1,6 +1,6 @@
 [package]
 name = "victron_ble"
-version = "0.5.1"
+version = "0.6.0"
 edition = "2021"
 repository = "https://github.com/felixwatts/victron_ble"
 description = "Read data from Victron devices over Bluetooth Low Energy."
@@ -16,7 +16,7 @@ thiserror = { version = "2.0.16", default-features = false }
 num_enum = { version = "0.7.4", default-features = false }
 strum = { version = "0.27.2", default-features = false, features = ["derive"] }
 block-padding = { version = "0.3.3", default-features = false }
-serde = { version = "1.0.219", optional = true, features = ["derive"]}
+serde = { version = "1.0.225", optional = true, features = ["derive"]}
 bitflags = { version = "2.9.3", default-features = false }
 tokio = { version =  "1.47.1", features = ["rt", "rt-multi-thread", "macros"], optional = true }
 tokio-stream = { version = "0.1.17", optional = true }
