@@ -2,6 +2,7 @@
 
 - Chg: change type of `VeBusState.error` to `ErrorState`.
 - Fix: correctly handle N/A values for `ErrorState` and `Mode`.
+- Chg: Remove redundant dependency `block-padding`.
 
 # 0.5.1
 
