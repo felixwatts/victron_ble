@@ -4,29 +4,34 @@ Read data from Victron devices over Bluetooth Low Energy.
 
 Some Victron devices broadcast some aspects of their state over Bluetooth on a regular basis. This crate makes it easy to access that data.
 
+This crate is intended to work on Linux and macOS devices. 
+
 ## Basic Usage
 
 Use the `open_stream` function to get a stream of state updates for a given
 Victron device:
 
 ```rust
-use std::{println, time::Duration};
 use tokio_stream::StreamExt;
 
 #[tokio::main]
 async fn main() {
     let device_name = "Victron Bluetooth device name".into();
-    let device_encryption_key = hex::decode("00"/* Victron device encryption key. See below. */).unwrap();
+    let device_encryption_key =
+        hex::decode("00" /* Victron device encryption key. See below. */).unwrap();
 
-    let mut device_state_stream = victron_ble::open_stream(
-        device_name,
-        device_encryption_key
-    ).unwrap();
+    let mut device_state_stream =
+        victron_ble::open_stream(device_name, device_encryption_key).unwrap();
 
     while let Some(result) = device_state_stream.next().await {
         println!("{result:?}");
     }
 }
+```
+
+Add the following crates to your `Cargo.toml`:
+```
+cargo add hex tokio tokio-stream victron-ble
 ```
 
 ## Device Setup
