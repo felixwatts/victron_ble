@@ -6,6 +6,7 @@ pub(crate) const RECORD_TYPE_TEST_RECORD: u8 = 0x00;
 pub(crate) const RECORD_TYPE_SOLAR_CHARGER: u8 = 0x01;
 pub(crate) const RECORD_TYPE_BATTERY_MONITOR: u8 = 0x02;
 pub(crate) const RECORD_TYPE_INVERTER: u8 = 0x03;
+pub(crate) const RECORD_TYPE_AC_CHARGER: u8 = 0x08;
 pub(crate) const RECORD_TYPE_VE_BUS: u8 = 0x0C;
 
 const MANUFACTURER_DATA_RECORD_TYPE: u8 = 0x10;

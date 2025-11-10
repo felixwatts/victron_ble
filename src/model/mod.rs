@@ -1,3 +1,4 @@
+mod ac_charger_state;
 mod alarm_reason;
 mod battery_monitor_state;
 mod device_state;
@@ -8,6 +9,7 @@ mod solar_charger_state;
 mod test_record_state;
 mod ve_bus_state;
 
+pub use ac_charger_state::AcChargerState;
 pub use alarm_reason::AlarmReason;
 pub use battery_monitor_state::BatteryMonitorState;
 pub use device_state::DeviceState;
