@@ -41,3 +41,52 @@ impl AcChargerState {
         })
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    // Raw: [0x04, 0x00, 0xA0, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x1B, 0xB9, 0x2F]
+    // As recorded and checked on Blue Smart IP22 Charger
+    #[test]
+    fn test_ac_charger_state_parse_1() {
+        let test_data = [
+            0x04, 0x00, 0xA0, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x1B,
+            0xB9, 0x2F,
+        ];
+
+        let result = AcChargerState::parse(&test_data).unwrap();
+
+        assert_eq!(result.device_error, Mode::Absorption);
+        assert_eq!(result.charger_error, ErrorState::NoError);
+
+        assert!((result.battery_voltage_1 - 14.40).abs() < 0.1);
+        assert!((result.battery_current_1).abs() < 0.11);
+        assert!((result.battery_voltage_2).abs() < 0.11);
+        assert!((result.battery_current_2).abs() < 0.11);
+        assert!((result.battery_voltage_3).abs() < 0.11);
+        assert!((result.battery_current_3).abs() < 0.11);
+    }
+
+    // Raw: [0x04, 0x00, 0xA0, 0x25, 0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x74, 0xA5, 0x82]
+    // As recorded and checked on Blue Smart IP22 Charger
+    #[test]
+    fn test_ac_charger_state_parse_2() {
+        let test_data = [
+            0x04, 0x00, 0xA0, 0x25, 0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x74,
+            0xA5, 0x82,
+        ];
+
+        let result = AcChargerState::parse(&test_data).unwrap();
+
+        assert_eq!(result.device_error, Mode::Absorption);
+        assert_eq!(result.charger_error, ErrorState::NoError);
+
+        assert!((result.battery_voltage_1 - 14.40).abs() < 0.1);
+        assert!((result.battery_current_1 - 2.5).abs() < 0.1);
+        assert!((result.battery_voltage_2).abs() < 0.11);
+        assert!((result.battery_current_2).abs() < 0.11);
+        assert!((result.battery_voltage_3).abs() < 0.11);
+        assert!((result.battery_current_3).abs() < 0.11);
+    }
+}
