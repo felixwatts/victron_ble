@@ -18,3 +18,4 @@ pub use mode::Mode;
 pub use solar_charger_state::SolarChargerState;
 pub use test_record_state::TestRecordState;
 pub use ve_bus_state::*;
+pub use ac_charger_state::AcChargerState;

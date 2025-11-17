@@ -48,3 +48,52 @@ impl AcChargerState {
         })
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    // Raw: [0x04, 0x00, 0xA0, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x1B, 0xB9, 0x2F]
+    // As recorded and checked on Blue Smart IP22 Charger
+    #[test]
+    fn test_ac_charger_state_parse_1() {
+        let test_data = [
+            0x04, 0x00, 0xA0, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x1B,
+            0xB9, 0x2F,
+        ];
+
+        let result = AcChargerState::parse(&test_data).unwrap();
+
+        assert_eq!(result.mode, Mode::Absorption);
+        assert_eq!(result.error_state, ErrorState::NoError);
+
+        assert!((result.battery_voltage1_v - 14.40).abs() < f32::EPSILON);
+        assert!((result.battery_current1_a - 0.0).abs() < f32::EPSILON);
+        assert!((result.battery_voltage2_v - -0.01).abs() < f32::EPSILON);
+        assert!((result.battery_current2_a - -0.1).abs() < f32::EPSILON);
+        assert!((result.battery_voltage3_v - -0.01).abs() < f32::EPSILON);
+        assert!((result.battery_current3_a - -0.1).abs() < f32::EPSILON);
+    }
+
+    // Raw: [0x04, 0x00, 0xA0, 0x25, 0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x74, 0xA5, 0x82]
+    // As recorded and checked on Blue Smart IP22 Charger
+    #[test]
+    fn test_ac_charger_state_parse_2() {
+        let test_data = [
+            0x04, 0x00, 0xA0, 0x25, 0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x74,
+            0xA5, 0x82,
+        ];
+
+        let result = AcChargerState::parse(&test_data).unwrap();
+
+        assert_eq!(result.mode, Mode::Absorption);
+        assert_eq!(result.error_state, ErrorState::NoError);
+
+        assert!((result.battery_voltage1_v - 14.40).abs() < f32::EPSILON);
+        assert!((result.battery_current1_a - 2.5).abs() < f32::EPSILON);
+        assert!((result.battery_voltage2_v - -0.01).abs() < f32::EPSILON);
+        assert!((result.battery_current2_a - -0.1).abs() < f32::EPSILON);
+        assert!((result.battery_voltage3_v - -0.01).abs() < f32::EPSILON);
+        assert!((result.battery_current3_a - -0.1).abs() < f32::EPSILON);
+    }
+}

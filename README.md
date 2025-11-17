@@ -50,6 +50,7 @@ Currently the following device types are supported. **Support can be added for o
 - Battery Monitor
 - Inverter
 - VE Bus
+- AC Charger
 
 ## Features
 

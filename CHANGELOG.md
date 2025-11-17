@@ -1,3 +1,8 @@
+# 0.7.0
+
+- Add: support for AC Charger device type
+- Fix: panic if you call `parse_manufacturer_data` with more than 24 bytes of data
+
 # 0.6.0
 
 - Chg: change type of `VeBusState.error` to `ErrorState`.

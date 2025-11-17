@@ -40,6 +40,10 @@ impl<'d, 'k> Record<'d, 'k> {
             encryption_key,
         };
 
+        if record.is_data_too_big() {
+            return Err(Error::RecordTooBig)
+        }
+
         if !record.is_victron_extra_manufacturer_data() {
             return Err(Error::WrongAdvertisement);
         }
@@ -63,6 +67,10 @@ impl<'d, 'k> Record<'d, 'k> {
 
     pub(crate) fn record_type(&self) -> u8 {
         self.data[4]
+    }
+
+    fn is_data_too_big(&self) -> bool {
+        self.data.len() > 24
     }
 
     fn is_victron_extra_manufacturer_data(&self) -> bool {

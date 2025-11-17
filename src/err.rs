@@ -18,9 +18,11 @@ pub enum Error {
     BluetoothDeviceNotFound,
     #[error("The bluetooth device event stream ended.")]
     BluetoothEventStreamClosed,
-    #[error("The data does not represent a Victron Manufacturer Data record. Victron devices emit multiple types of advertisement data so keep listening.")]
+    #[error("The Manufacturer Data record is too big. It cannot exceed 24 bytes.")]
+    RecordTooBig,
+    #[error("The Manufacturer Data does not represent a Victron Manufacturer Data record. Victron devices emit multiple types of advertisement data so keep listening.")]
     WrongAdvertisement,
-    #[error("The data could not be decrypted: {0}")]
+    #[error("The Manufacturer Data could not be decrypted: {0}")]
     DecryptionFailed(StreamCipherError),
     #[error("Incorrect device encryption key. The Device encryption key provided is not correct for this device.")]
     IncorrectDeviceEncryptionKey,
