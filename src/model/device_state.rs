@@ -1,6 +1,7 @@
 use crate::err::*;
 use crate::record::*;
 
+use super::ac_charger_state::AcChargerState;
 use super::battery_monitor_state::BatteryMonitorState;
 use super::inverter_state::InverterState;
 use super::solar_charger_state::SolarChargerState;
@@ -12,6 +13,7 @@ use super::ve_bus_state::VeBusState;
 pub enum DeviceState {
     TestRecord(TestRecordState),
     SolarCharger(SolarChargerState),
+    AcCharger(AcChargerState),
     BatteryMonitor(BatteryMonitorState),
     Inverter(InverterState),
     VeBus(VeBusState),
@@ -31,6 +33,7 @@ impl DeviceState {
             )?)),
             RECORD_TYPE_INVERTER => Ok(Self::Inverter(InverterState::parse(&record.decrypt()?)?)),
             RECORD_TYPE_VE_BUS => Ok(Self::VeBus(VeBusState::parse(&record.decrypt()?)?)),
+            RECORD_TYPE_AC_CHARGER => Ok(Self::AcCharger(AcChargerState::parse(&record.decrypt()?)?)),
             _ => Err(Error::UnsupportedDeviceType(record.record_type())),
         }
     }

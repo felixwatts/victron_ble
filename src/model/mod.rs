@@ -5,6 +5,7 @@ mod error_state;
 mod inverter_state;
 mod mode;
 mod solar_charger_state;
+mod ac_charger_state;
 mod test_record_state;
 mod ve_bus_state;
 
