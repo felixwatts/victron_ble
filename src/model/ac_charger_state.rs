@@ -9,14 +9,14 @@ use super::mode::Mode;
 pub struct AcChargerState {
     pub mode: Mode,
     pub error_state: ErrorState,
-    pub battery_voltage1_v: f32,
-    pub battery_current1_a: f32,
-    pub battery_voltage2_v: f32,
-    pub battery_current2_a: f32,
-    pub battery_voltage3_v: f32,
-    pub battery_current3_a: f32,
-    pub temperature_c: f32,
-    pub ac_current_a: f32,
+    pub battery_voltage1_v: Option<f32>,
+    pub battery_current1_a: Option<f32>,
+    pub battery_voltage2_v: Option<f32>,
+    pub battery_current2_a: Option<f32>,
+    pub battery_voltage3_v: Option<f32>,
+    pub battery_current3_a: Option<f32>,
+    pub temperature_c: Option<f32>,
+    pub ac_current_a: Option<f32>,
 }
 
 impl AcChargerState {
@@ -25,14 +25,14 @@ impl AcChargerState {
 
         let mode = Mode::try_from(reader.read_unsigned_int(8)?)?;
         let error_state = ErrorState::try_from(reader.read_unsigned_int(8)?)?;
-        let battery_voltage1_v = (reader.read_signed_int(13)? as f32) / 100.0;
-        let battery_current1_a = (reader.read_signed_int(11)? as f32) / 10.0;
-        let battery_voltage2_v = (reader.read_signed_int(13)? as f32) / 100.0;
-        let battery_current2_a = (reader.read_signed_int(11)? as f32) / 10.0;
-        let battery_voltage3_v = (reader.read_signed_int(13)? as f32) / 100.0;
-        let battery_current3_a = (reader.read_signed_int(11)? as f32) / 10.0;
-        let temperature_c = (reader.read_signed_int(7)? as f32) + 40.0;
-        let ac_current_a = (reader.read_unsigned_int(9)? as f32) / 10.0;
+        let battery_voltage1_v = reader.read_unsigned_field(13, 0x1FFF, 0.01, 0.0)?;
+        let battery_current1_a = reader.read_unsigned_field(11, 0x7FF, 0.1, 0.0)?;
+        let battery_voltage2_v = reader.read_unsigned_field(13, 0x1FFF, 0.01, 0.0)?;
+        let battery_current2_a = reader.read_unsigned_field(11, 0x7FF, 0.1, 0.0)?;
+        let battery_voltage3_v = reader.read_unsigned_field(13, 0x1FFF, 0.01, 0.0)?;
+        let battery_current3_a = reader.read_unsigned_field(11, 0x7FF, 0.1, 0.0)?;
+        let temperature_c = reader.read_unsigned_field(7, 0x7F, 1.0, -40.0)?;
+        let ac_current_a = reader.read_unsigned_field(9, 0x1FF, 0.1, 0.0)?;
 
         Ok(Self {
             mode,
@@ -66,13 +66,14 @@ mod test {
 
         assert_eq!(result.mode, Mode::Absorption);
         assert_eq!(result.error_state, ErrorState::NoError);
-
-        assert!((result.battery_voltage1_v - 14.40).abs() < f32::EPSILON);
-        assert!((result.battery_current1_a - 0.0).abs() < f32::EPSILON);
-        assert!((result.battery_voltage2_v - -0.01).abs() < f32::EPSILON);
-        assert!((result.battery_current2_a - -0.1).abs() < f32::EPSILON);
-        assert!((result.battery_voltage3_v - -0.01).abs() < f32::EPSILON);
-        assert!((result.battery_current3_a - -0.1).abs() < f32::EPSILON);
+        assert!((result.battery_voltage1_v.unwrap() - 14.40).abs() < f32::EPSILON);
+        assert!((result.battery_current1_a.unwrap() - 0.0).abs() < f32::EPSILON);
+        assert!(result.battery_voltage2_v.is_none());
+        assert!(result.battery_current2_a.is_none());
+        assert!(result.battery_voltage3_v.is_none());
+        assert!(result.battery_current3_a.is_none());
+        assert!(result.temperature_c.is_none());
+        assert!(result.ac_current_a.is_none());
     }
 
     // Raw: [0x04, 0x00, 0xA0, 0x25, 0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x74, 0xA5, 0x82]
@@ -88,12 +89,13 @@ mod test {
 
         assert_eq!(result.mode, Mode::Absorption);
         assert_eq!(result.error_state, ErrorState::NoError);
-
-        assert!((result.battery_voltage1_v - 14.40).abs() < f32::EPSILON);
-        assert!((result.battery_current1_a - 2.5).abs() < f32::EPSILON);
-        assert!((result.battery_voltage2_v - -0.01).abs() < f32::EPSILON);
-        assert!((result.battery_current2_a - -0.1).abs() < f32::EPSILON);
-        assert!((result.battery_voltage3_v - -0.01).abs() < f32::EPSILON);
-        assert!((result.battery_current3_a - -0.1).abs() < f32::EPSILON);
+        assert!((result.battery_voltage1_v.unwrap() - 14.40).abs() < f32::EPSILON);
+        assert!((result.battery_current1_a.unwrap() - 2.5).abs() < f32::EPSILON);
+        assert!(result.battery_voltage2_v.is_none());
+        assert!(result.battery_current2_a.is_none());
+        assert!(result.battery_voltage3_v.is_none());
+        assert!(result.battery_current3_a.is_none());
+        assert!(result.temperature_c.is_none());
+        assert!(result.ac_current_a.is_none());
     }
 }

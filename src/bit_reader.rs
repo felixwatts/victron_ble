@@ -18,6 +18,28 @@ impl<'a> BitReader<'a> {
         Self { cursor: 0, data }
     }
 
+    pub fn read_unsigned_field(&mut self, num_bits: usize, na_value: u64, scale: f32, offset: f32) -> Result<Option<f32>> {
+        let int_val = self.read_unsigned_int(num_bits)?;
+        if int_val == na_value {
+            return Ok(None);
+        }
+
+        let val = (int_val as f32) * scale + offset;
+        
+        Ok(Some(val))
+    }
+
+    pub fn read_signed_field(&mut self, num_bits: usize, na_value: i64, scale: f32) -> Result<Option<f32>> {
+        let int_val = self.read_signed_int(num_bits)?;
+        if int_val == na_value {
+            return Ok(None);
+        }
+
+        let val = (int_val as f32) * scale;
+        
+        Ok(Some(val))
+    }
+
     pub fn read_unsigned_int(&mut self, num_bits: usize) -> Result<u64> {
         let mut value = 0u64;
         for position in 0..num_bits {

@@ -9,11 +9,11 @@ use super::mode::Mode;
 pub struct SolarChargerState {
     pub mode: Mode,
     pub error_state: ErrorState,
-    pub battery_voltage_v: f32,
-    pub battery_current_a: f32,
-    pub yield_today_kwh: f32,
-    pub pv_power_w: f32,
-    pub load_current_a: f32,
+    pub battery_voltage_v: Option<f32>,
+    pub battery_current_a: Option<f32>,
+    pub yield_today_kwh: Option<f32>,
+    pub pv_power_w: Option<f32>,
+    pub load_current_a: Option<f32>,
 }
 
 impl SolarChargerState {
@@ -22,11 +22,11 @@ impl SolarChargerState {
 
         let mode = Mode::try_from(reader.read_unsigned_int(8)?)?;
         let error_state = ErrorState::try_from(reader.read_unsigned_int(8)?)?;
-        let battery_voltage_v = (reader.read_signed_int(16)? as f32) / 100.0;
-        let battery_current_a = (reader.read_signed_int(16)? as f32) / 10.0;
-        let yield_today_kwh = (reader.read_unsigned_int(16)? as f32) / 100.0;
-        let pv_power_w = reader.read_unsigned_int(16)? as f32;
-        let load_current_a = (reader.read_unsigned_int(9)? as f32) / 10.0;
+        let battery_voltage_v = reader.read_signed_field(16, 0x7FFF, 0.01)?;
+        let battery_current_a = reader.read_signed_field(16, 0x7FFF, 0.1)?;
+        let yield_today_kwh = reader.read_unsigned_field(16, 0xFFFF, 0.01, 0.0)?;
+        let pv_power_w = reader.read_unsigned_field(16, 0xFFFF, 1.0, 0.0)?;
+        let load_current_a = reader.read_unsigned_field(9, 0x1FF, 0.1, 0.0)?;
 
         Ok(Self {
             mode,

@@ -9,14 +9,14 @@ use num_enum::TryFromPrimitive;
 pub struct VeBusState {
     pub mode: Mode,
     pub error: ErrorState,
-    pub battery_voltage_v: f32,
-    pub battery_current_a: f32,
+    pub battery_voltage_v: Option<f32>,
+    pub battery_current_a: Option<f32>,
     pub ac_in_state: AcInState,
-    pub ac_in_power_w: f32,
-    pub ac_out_power_w: f32,
+    pub ac_in_power_w: Option<f32>,
+    pub ac_out_power_w: Option<f32>,
     pub alarm: AlarmNotification,
-    pub battery_temperature_c: f32,
-    pub soc_percent: f32,
+    pub battery_temperature_c: Option<f32>,
+    pub soc_percent: Option<f32>,
 }
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -45,18 +45,18 @@ impl VeBusState {
 
         let mode = Mode::try_from(reader.read_unsigned_int(8)?)?;
         let error = ErrorState::try_from(reader.read_unsigned_int(8)?)?;
-        let battery_current_a = (reader.read_signed_int(16)? as f32) / 10.0;
-        let battery_voltage_v = (reader.read_unsigned_int(14)? as f32) / 100.0;
+        let battery_current_a = reader.read_signed_field(16, 0x7FFF, 0.1)?;
+        let battery_voltage_v = reader.read_unsigned_field(14, 0x3FFF, 0.01, 0.0)?;
         let ac_in_state = AcInState::try_from(reader.read_unsigned_int(2)? as u8)
             .ok()
             .ok_or(Error::InvalidAcInState)?;
-        let ac_in_power_w = reader.read_signed_int(19)? as f32;
-        let ac_out_power_w = reader.read_signed_int(19)? as f32;
+        let ac_in_power_w = reader.read_signed_field(19, 0x3FFFF, 1.0)?;
+        let ac_out_power_w = reader.read_signed_field(19, 0x3FFFF, 1.0)?;
         let alarm = AlarmNotification::try_from(reader.read_unsigned_int(2)? as u8)
             .ok()
             .ok_or(Error::InvalidAlarmNotification)?;
-        let battery_temperature_c = reader.read_unsigned_int(7)? as f32 - 40.0;
-        let soc_percent = reader.read_unsigned_int(7)? as f32;
+        let battery_temperature_c = reader.read_unsigned_field(7, 0x7F, 1.0, -40.0)?;
+        let soc_percent = reader.read_unsigned_field(7, 0x7F, 1.0, 0.0)?;
 
         Ok(Self {
             mode,
@@ -95,15 +95,12 @@ mod test {
 
         assert_eq!(result.mode, Mode::Float);
         assert_eq!(result.error, ErrorState::NoError);
-
-        assert!((result.battery_voltage_v - 13.50).abs() < 0.1);
-
-        assert!((result.battery_current_a - 2.2).abs() < 0.1);
-
+        assert!((result.battery_voltage_v.unwrap() - 13.50).abs() < f32::EPSILON);
+        assert!((result.battery_current_a.unwrap() - 2.2).abs() < 0.1);
         assert_eq!(result.ac_in_state, AcInState::AcIn1);
-
-        assert!((result.battery_temperature_c - 26.0).abs() < 2.0);
-
+        assert!((result.ac_in_power_w.unwrap() - 47.0) < f32::EPSILON);
+        assert!((result.battery_temperature_c.unwrap() - 26.0).abs() < f32::EPSILON);
         assert_eq!(result.alarm, AlarmNotification::NoAlarm);
+        assert!(result.soc_percent.is_none());
     }
 }

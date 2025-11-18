@@ -5,13 +5,13 @@ use crate::err::*;
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct BatteryMonitorState {
-    pub time_to_go_mins: f32,
-    pub battery_voltage_v: f32,
+    pub time_to_go_mins: Option<f32>,
+    pub battery_voltage_v: Option<f32>,
     pub alarm_reason: AlarmReason,
     pub aux_input: AuxInput,
-    pub battery_current_a: f32,
-    pub consumed_amp_hours_ah: f32,
-    pub state_of_charge_pct: f32,
+    pub battery_current_a: Option<f32>,
+    pub consumed_amp_hours_ah: Option<f32>,
+    pub state_of_charge_pct: Option<f32>,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
@@ -27,8 +27,8 @@ impl BatteryMonitorState {
     pub(crate) fn parse(payload: &[u8]) -> Result<Self> {
         let mut reader = BitReader::new(payload);
 
-        let time_to_go_mins = reader.read_unsigned_int(16)? as f32;
-        let battery_voltage_v = reader.read_signed_int(16)? as f32 / 100.0;
+        let time_to_go_mins = reader.read_unsigned_field(16, 0xFFFF, 1.0, 0.0)?;
+        let battery_voltage_v = reader.read_signed_field(16, 0x7FFF, 0.01)?;
         let alarm_reason =
             AlarmReason::from_bits(reader.read_signed_int(16)?).ok_or(Error::InvalidAlarmReason)?;
 
@@ -54,9 +54,9 @@ impl BatteryMonitorState {
             t => return Err(Error::InvalidAuxInputType(t)),
         };
 
-        let battery_current_a = reader.read_signed_int(22)? as f32 / 1000.0;
-        let consumed_amp_hours_ah = reader.read_signed_int(20)? as f32 / -10.0;
-        let state_of_charge_pct = reader.read_unsigned_int(10)? as f32 / 10.0;
+        let battery_current_a = reader.read_signed_field(22, 0x3FFFFF, 0.001)?;
+        let consumed_amp_hours_ah = reader.read_unsigned_field(20, 0xFFFFF, -0.1, 0.0)?;
+        let state_of_charge_pct = reader.read_unsigned_field(10, 0x3FF, 0.1, 0.0)?;
 
         Ok(Self {
             time_to_go_mins,
