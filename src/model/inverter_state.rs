@@ -8,10 +8,10 @@ use crate::err::*;
 pub struct InverterState {
     pub mode: Mode,
     pub alarm_reason: AlarmReason,
-    pub battery_voltage_v: f32,
-    pub ac_apparent_power_va: f32,
-    pub ac_voltage_v: f32,
-    pub ac_current_a: f32,
+    pub battery_voltage_v: Option<f32>,
+    pub ac_apparent_power_va: Option<f32>,
+    pub ac_voltage_v: Option<f32>,
+    pub ac_current_a: Option<f32>,
 }
 
 impl InverterState {
@@ -21,10 +21,10 @@ impl InverterState {
         let mode = Mode::try_from(reader.read_unsigned_int(8)?)?;
         let alarm_reason =
             AlarmReason::from_bits(reader.read_signed_int(16)?).ok_or(Error::InvalidAlarmReason)?;
-        let battery_voltage_v = reader.read_signed_int(16)? as f32 / 100.0;
-        let ac_apparent_power_va = reader.read_unsigned_int(16)? as f32;
-        let ac_voltage_v = reader.read_unsigned_int(15)? as f32 / 100.0;
-        let ac_current_a = reader.read_unsigned_int(11)? as f32 / 10.0;
+        let battery_voltage_v = reader.read_signed_field(16, 0x7FFF, 0.01)?;
+        let ac_apparent_power_va = reader.read_unsigned_field(16, 0xFFFF, 1.0, 0.0)?;
+        let ac_voltage_v = reader.read_unsigned_field(15, 0x7FFF, 0.01, 0.0)?;
+        let ac_current_a = reader.read_unsigned_field(11, 0x7FF, 0.1, 0.0)?;
 
         Ok(Self {
             mode,
