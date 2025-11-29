@@ -1,3 +1,7 @@
+# 1.1.0
+
+- Fix: Make `AuxInput` public
+
 # 1.0.0
 
 - Fix: add proper handling for NA values. Many fields that were `f32` are now `Option<f32>` to reflect that fact that fields can be NA.
