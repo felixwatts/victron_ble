@@ -1,6 +1,6 @@
 # 1.1.0
 
-- Fix: Publicly export the AuxInput enum.
+- Fix: Publicly export the `AuxInput` enum.
 
 # 1.0.0
 

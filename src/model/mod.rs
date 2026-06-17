@@ -10,7 +10,7 @@ mod test_record_state;
 mod ve_bus_state;
 
 pub use alarm_reason::AlarmReason;
-pub use battery_monitor_state::BatteryMonitorState;
+pub use battery_monitor_state::*;
 pub use device_state::DeviceState;
 pub use error_state::ErrorState;
 pub use inverter_state::InverterState;
