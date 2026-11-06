@@ -56,11 +56,12 @@ impl<'d, 'k> Record<'d, 'k> {
     }
 
     pub(crate) fn decrypt(&self) -> Result<[u8; 16]> {
-        let mut algo = EncryptionAlgorithm::new(self.encryption_key.into(), &self.iv().into());
+        let mut algo = EncryptionAlgorithm::new_from_slices(self.encryption_key, &self.iv())
+            .map_err(|_| Error::InvalidDeviceEncryptionKey)?;
 
         let cipher = self.cipher();
         let mut data = [0; 16];
-        algo.apply_keystream_b2b(&cipher, &mut data)?;
+        algo.try_apply_keystream_b2b(&cipher, &mut data)?;
 
         Ok(data)
     }
@@ -127,9 +128,9 @@ mod test {
             17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
         ];
         let iv = [33, 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let mut algo = EncryptionAlgorithm::new(key.as_slice().into(), &iv.into());
+        let mut algo = EncryptionAlgorithm::new(&key.into(), &iv.into());
         let mut cipher = [0; 16];
-        algo.apply_keystream_b2b(&plaintext, &mut cipher).unwrap();
+        algo.apply_keystream_b2b(&plaintext, &mut cipher);
 
         let manufacturer_data = [
             MANUFACTURER_DATA_RECORD_TYPE,

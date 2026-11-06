@@ -1,3 +1,9 @@
+# 1.2.0
+
+- Chg: upgrade all dependencies to latest, including `aes` 0.9, `ctr` 0.10 and `strum` 0.28.
+- Fix: return `Error::InvalidDeviceEncryptionKey` instead of panicking when the device encryption key has the wrong length.
+- Chg: remove unused import from README example and redundant `readme` key from `Cargo.toml`.
+
 # 1.1.0
 
 - Fix: Publicly export the `AuxInput` enum.

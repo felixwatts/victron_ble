@@ -10,7 +10,6 @@ Use the `open_stream` function to get a stream of state updates for a given
 Victron device:
 
 ```rust
-use std::{println, time::Duration};
 use tokio_stream::StreamExt;
 
 #[tokio::main]
